@@ -1,15 +1,102 @@
 /**
- * AlbumDetail - Album detail page
- * Shows album info, track list, and related content
+ * AlbumDetail - Album detail page (Enhanced)
+ * Shows album info, chart stats, track list, and related content
  */
 
 import { useParams, Link } from "wouter";
-import { ArrowLeft, Calendar, Disc3, Music, List } from "lucide-react";
+import { ArrowLeft, Calendar, Disc3, Music, List, TrendingUp, TrendingDown, Minus, Award, BarChart3, Star } from "lucide-react";
 import ChartLayout from "@/components/charts/ChartLayout";
 import { DetailPageSkeleton } from "@/components/ui/Skeleton";
 import { NotFoundState } from "@/components/ui/ErrorState";
-import { useAlbum, useArtistsIndex, useSongsIndex } from "@/hooks/useChartData";
+import { useAlbum, useArtistsIndex, useSongsIndex, useAlbumChartStats, useRelatedAlbums } from "@/hooks/useChartData";
 import { cn } from "@/lib/utils";
+
+// Custom SVG Icons
+function SpotifyIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+    </svg>
+  );
+}
+
+function AppleMusicIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.997 6.124a9.23 9.23 0 0 0-.24-2.19A5.88 5.88 0 0 0 22.3 1.776a5.87 5.87 0 0 0-2.16-1.457 9.22 9.22 0 0 0-2.19-.24A60 60 0 0 0 12 0a60 60 0 0 0-5.95.08 9.23 9.23 0 0 0-2.19.24 5.88 5.88 0 0 0-2.16 1.457 5.88 5.88 0 0 0-1.457 2.16 9.23 9.23 0 0 0-.24 2.19A60 60 0 0 0 0 12a60 60 0 0 0 .08 5.95 9.23 9.23 0 0 0 .24 2.19 5.88 5.88 0 0 0 1.457 2.16 5.88 5.88 0 0 0 2.16 1.457 9.23 9.23 0 0 0 2.19.24A60 60 0 0 0 12 24a60 60 0 0 0 5.95-.08 9.23 9.23 0 0 0 2.19-.24 5.88 5.88 0 0 0 2.16-1.457 5.88 5.88 0 0 0 1.457-2.16 9.23 9.23 0 0 0 .24-2.19A60 60 0 0 0 24 12a60 60 0 0 0-.003-5.876zM16.95 16.24a.75.75 0 0 1-.75.75h-8.4a.75.75 0 0 1-.75-.75V7.76a.75.75 0 0 1 .75-.75h8.4a.75.75 0 0 1 .75.75v8.48z"/>
+      <path d="M15.75 8.75h-7.5v6.5h7.5v-6.5zm-1.5 4.5h-4.5v-2.5h4.5v2.5z"/>
+    </svg>
+  );
+}
+
+// Stat Card Component
+interface StatCardProps {
+  label: string;
+  value: string | number | null;
+  icon: React.ReactNode;
+  gradient: string;
+  subValue?: React.ReactNode;
+}
+
+function StatCard({ label, value, icon, gradient, subValue }: StatCardProps) {
+  return (
+    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#252525]">
+      <div className="flex items-center gap-2 mb-2">
+        <div className={cn("w-8 h-8 rounded flex items-center justify-center bg-gradient-to-r", gradient)}>
+          {icon}
+        </div>
+        <span className="text-gray-400 text-xs uppercase tracking-wider" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          {label}
+        </span>
+      </div>
+      <div
+        className="text-2xl font-bold text-white"
+        style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.02em" }}
+      >
+        {value ?? "-"}
+      </div>
+      {subValue && (
+        <div className="text-xs text-gray-500 mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          {subValue}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Change Indicator Component
+function ChangeIndicator({ change }: { change: number | null }) {
+  if (change === null) {
+    return (
+      <span className="flex items-center gap-1 text-gray-500 text-xs">
+        <Minus size={12} />
+        NEW
+      </span>
+    );
+  }
+  if (change > 0) {
+    return (
+      <span className="flex items-center gap-1 text-green-500 text-xs">
+        <TrendingUp size={12} />
+        +{change}
+      </span>
+    );
+  }
+  if (change < 0) {
+    return (
+      <span className="flex items-center gap-1 text-red-500 text-xs">
+        <TrendingDown size={12} />
+        {change}
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center gap-1 text-gray-500 text-xs">
+      <Minus size={12} />
+      -
+    </span>
+  );
+}
 
 export default function AlbumDetail() {
   const params = useParams<{ id: string }>();
@@ -18,11 +105,13 @@ export default function AlbumDetail() {
   const { data: album, loading: albumLoading, error: albumError } = useAlbum(albumId);
   const { data: artistsIndex } = useArtistsIndex();
   const { data: songsIndex } = useSongsIndex();
+  const { data: chartStats } = useAlbumChartStats(albumId);
+  const { data: relatedAlbums } = useRelatedAlbums(albumId, album?.artistId);
 
   // Find artist data
   const artist = artistsIndex?.artists.find((a) => a.id === album?.artistId);
   // Find songs from this album
-  const albumSongs = songsIndex?.songs.filter((s) => s.artistId === album?.artistId) || [];
+  const albumSongs = songsIndex?.songs.filter((s) => s.albumId === album?.id) || [];
 
   if (albumLoading) {
     return (
@@ -177,7 +266,8 @@ export default function AlbumDetail() {
                     className="flex items-center gap-2 px-4 py-2 bg-[#1DB954] text-white text-sm font-bold rounded-lg hover:bg-[#1aa34a] transition-colors"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    Listen on Spotify
+                    <SpotifyIcon className="w-4 h-4" />
+                    Spotify
                   </a>
                 )}
                 {album.appleMusicId && (
@@ -188,6 +278,7 @@ export default function AlbumDetail() {
                     className="flex items-center gap-2 px-4 py-2 bg-[#fc3c44] text-white text-sm font-bold rounded-lg hover:bg-[#e02d35] transition-colors"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
+                    <AppleMusicIcon className="w-4 h-4" />
                     Apple Music
                   </a>
                 )}
@@ -199,6 +290,45 @@ export default function AlbumDetail() {
 
       {/* Content Sections */}
       <div className="bg-[#0f0f0f] border-t border-[#1e1e1e]">
+        {/* Chart Stats */}
+        {chartStats && chartStats.currentRank && (
+          <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
+            <h2
+              className="text-lg font-bold uppercase mb-4"
+              style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
+            >
+              Chart Performance
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <StatCard
+                label="Current Rank"
+                value={`#${chartStats.currentRank}`}
+                icon={<BarChart3 size={16} className="text-white" />}
+                gradient="from-[#a855f7] to-[#ec4899]"
+                subValue={<ChangeIndicator change={chartStats.change} />}
+              />
+              <StatCard
+                label="Peak Rank"
+                value={chartStats.peakRank ? `#${chartStats.peakRank}` : "-"}
+                icon={<Award size={16} className="text-white" />}
+                gradient="from-[#ec4899] to-[#f97316]"
+              />
+              <StatCard
+                label="Weeks on Chart"
+                value={chartStats.weeksOnChart}
+                icon={<Calendar size={16} className="text-white" />}
+                gradient="from-[#f97316] to-[#eab308]"
+              />
+              <StatCard
+                label="Previous Rank"
+                value={chartStats.previousRank ? `#${chartStats.previousRank}` : "NEW"}
+                icon={<TrendingUp size={16} className="text-white" />}
+                gradient="from-[#00d4ff] to-[#a855f7]"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Description */}
         {album.description && (
           <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
@@ -228,7 +358,7 @@ export default function AlbumDetail() {
                 <Link
                   key={song.id}
                   href={`/songs/${song.id}`}
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#1a1a1a] transition-colors group"
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#1a1a1a] transition-colors group border border-transparent hover:border-[#252525]"
                 >
                   <div
                     className="w-8 h-8 flex items-center justify-center text-gray-500 group-hover:text-white"
@@ -246,13 +376,26 @@ export default function AlbumDetail() {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium truncate group-hover:text-[#a855f7] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                      {song.title}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-white text-sm font-medium truncate group-hover:text-[#a855f7] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        {song.title}
+                      </p>
+                      {song.isTitle && (
+                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-[#00d4ff]/20 text-[#00d4ff] text-[9px] font-bold uppercase rounded">
+                          <Star size={8} />
+                          Title
+                        </span>
+                      )}
+                    </div>
                     <p className="text-gray-500 text-xs truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       {song.artistName}
                     </p>
                   </div>
+                  {song.duration && (
+                    <div className="text-gray-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {formatDuration(song.duration)}
+                    </div>
+                  )}
                 </Link>
               ))}
             </div>
@@ -268,7 +411,7 @@ export default function AlbumDetail() {
 
         {/* Artist Section */}
         {artist && (
-          <div className="px-4 sm:px-6 py-6">
+          <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
             <h2
               className="text-lg font-bold uppercase mb-4"
               style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
@@ -277,7 +420,7 @@ export default function AlbumDetail() {
             </h2>
             <Link
               href={`/artists/${artist.id}`}
-              className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors"
+              className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors border border-[#252525]"
             >
               <div className="w-16 h-16 rounded-full overflow-hidden bg-[#252525] flex-shrink-0">
                 {artist.image ? (
@@ -302,6 +445,51 @@ export default function AlbumDetail() {
                 </p>
               </div>
             </Link>
+          </div>
+        )}
+
+        {/* Related Albums */}
+        {relatedAlbums && relatedAlbums.length > 0 && (
+          <div className="px-4 sm:px-6 py-6">
+            <h2
+              className="text-lg font-bold uppercase mb-4"
+              style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
+            >
+              More from {album.artistName}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {relatedAlbums.map((relatedAlbum) => {
+                const relatedColors = albumTypeColors[relatedAlbum.albumType as keyof typeof albumTypeColors] || albumTypeColors.full;
+                return (
+                  <Link
+                    key={relatedAlbum.id}
+                    href={`/albums/${relatedAlbum.id}`}
+                    className="block p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors border border-[#252525] group"
+                  >
+                    <div className="w-full aspect-square rounded overflow-hidden bg-[#252525] mb-2">
+                      {relatedAlbum.coverImage ? (
+                        <img src={relatedAlbum.coverImage} alt={relatedAlbum.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-600">
+                          <Disc3 size={24} />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-white text-sm font-medium truncate group-hover:text-[#a855f7] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {relatedAlbum.title}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-gray-500 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        {formatDate(relatedAlbum.releaseDate)}
+                      </span>
+                      <span className={cn("text-[9px] uppercase", relatedColors.text)} style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                        {getAlbumTypeLabel(relatedAlbum.albumType)}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -335,4 +523,10 @@ function formatDate(dateStr: string): string {
   } catch {
     return dateStr;
   }
+}
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
 }

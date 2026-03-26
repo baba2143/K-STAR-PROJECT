@@ -1,14 +1,101 @@
 /**
- * SongDetail - Song detail page
- * Shows song info, chart history, and related content
+ * SongDetail - Song detail page (Enhanced)
+ * Shows song info, chart stats, and related content
  */
 
 import { useParams, Link } from "wouter";
-import { ArrowLeft, Calendar, Clock, Music, Disc3, Play } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Music, Disc3, TrendingUp, TrendingDown, Minus, Award, BarChart3 } from "lucide-react";
 import ChartLayout from "@/components/charts/ChartLayout";
 import { DetailPageSkeleton } from "@/components/ui/Skeleton";
 import { NotFoundState } from "@/components/ui/ErrorState";
-import { useSong, useArtistsIndex, useAlbumsIndex } from "@/hooks/useChartData";
+import { useSong, useArtistsIndex, useAlbumsIndex, useSongChartStats, useRelatedSongs } from "@/hooks/useChartData";
+import { cn } from "@/lib/utils";
+
+// Custom SVG Icons
+function SpotifyIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+    </svg>
+  );
+}
+
+function YouTubeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+    </svg>
+  );
+}
+
+// Stat Card Component
+interface StatCardProps {
+  label: string;
+  value: string | number | null;
+  icon: React.ReactNode;
+  gradient: string;
+  subValue?: string | null;
+}
+
+function StatCard({ label, value, icon, gradient, subValue }: StatCardProps) {
+  return (
+    <div className="bg-[#1a1a1a] rounded-lg p-4 border border-[#252525]">
+      <div className="flex items-center gap-2 mb-2">
+        <div className={cn("w-8 h-8 rounded flex items-center justify-center bg-gradient-to-r", gradient)}>
+          {icon}
+        </div>
+        <span className="text-gray-400 text-xs uppercase tracking-wider" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          {label}
+        </span>
+      </div>
+      <div
+        className="text-2xl font-bold text-white"
+        style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.02em" }}
+      >
+        {value ?? "-"}
+      </div>
+      {subValue && (
+        <div className="text-xs text-gray-500 mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          {subValue}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Change Indicator Component
+function ChangeIndicator({ change }: { change: number | null }) {
+  if (change === null) {
+    return (
+      <span className="flex items-center gap-1 text-gray-500 text-xs">
+        <Minus size={12} />
+        NEW
+      </span>
+    );
+  }
+  if (change > 0) {
+    return (
+      <span className="flex items-center gap-1 text-green-500 text-xs">
+        <TrendingUp size={12} />
+        +{change}
+      </span>
+    );
+  }
+  if (change < 0) {
+    return (
+      <span className="flex items-center gap-1 text-red-500 text-xs">
+        <TrendingDown size={12} />
+        {change}
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center gap-1 text-gray-500 text-xs">
+      <Minus size={12} />
+      -
+    </span>
+  );
+}
 
 export default function SongDetail() {
   const params = useParams<{ id: string }>();
@@ -17,6 +104,8 @@ export default function SongDetail() {
   const { data: song, loading: songLoading, error: songError } = useSong(songId);
   const { data: artistsIndex } = useArtistsIndex();
   const { data: albumsIndex } = useAlbumsIndex();
+  const { data: chartStats } = useSongChartStats(songId);
+  const { data: relatedSongs } = useRelatedSongs(songId, song?.artistId);
 
   // Find artist data
   const artist = artistsIndex?.artists.find((a) => a.id === song?.artistId);
@@ -176,7 +265,7 @@ export default function SongDetail() {
                     className="flex items-center gap-2 px-4 py-2 bg-[#FF0000] text-white text-sm font-bold rounded-lg hover:bg-[#cc0000] transition-colors"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    <Play size={14} />
+                    <YouTubeIcon className="w-4 h-4" />
                     Watch MV
                   </a>
                 )}
@@ -188,7 +277,8 @@ export default function SongDetail() {
                     className="flex items-center gap-2 px-4 py-2 bg-[#1DB954] text-white text-sm font-bold rounded-lg hover:bg-[#1aa34a] transition-colors"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    Listen on Spotify
+                    <SpotifyIcon className="w-4 h-4" />
+                    Spotify
                   </a>
                 )}
               </div>
@@ -199,6 +289,45 @@ export default function SongDetail() {
 
       {/* Content Sections */}
       <div className="bg-[#0f0f0f] border-t border-[#1e1e1e]">
+        {/* Chart Stats */}
+        {chartStats && chartStats.currentRank && (
+          <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
+            <h2
+              className="text-lg font-bold uppercase mb-4"
+              style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
+            >
+              Chart Performance
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <StatCard
+                label="Current Rank"
+                value={`#${chartStats.currentRank}`}
+                icon={<BarChart3 size={16} className="text-white" />}
+                gradient="from-[#00d4ff] to-[#a855f7]"
+                subValue={<ChangeIndicator change={chartStats.change} /> as unknown as string}
+              />
+              <StatCard
+                label="Peak Rank"
+                value={chartStats.peakRank ? `#${chartStats.peakRank}` : "-"}
+                icon={<Award size={16} className="text-white" />}
+                gradient="from-[#a855f7] to-[#ec4899]"
+              />
+              <StatCard
+                label="Weeks on Chart"
+                value={chartStats.weeksOnChart}
+                icon={<Calendar size={16} className="text-white" />}
+                gradient="from-[#ec4899] to-[#f97316]"
+              />
+              <StatCard
+                label="Previous Rank"
+                value={chartStats.previousRank ? `#${chartStats.previousRank}` : "NEW"}
+                icon={<TrendingUp size={16} className="text-white" />}
+                gradient="from-[#f97316] to-[#eab308]"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Genre */}
         {song.genre && song.genre.length > 0 && (
           <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
@@ -212,12 +341,46 @@ export default function SongDetail() {
               {song.genre.map((g) => (
                 <span
                   key={g}
-                  className="px-3 py-1 bg-[#1a1a1a] text-gray-300 text-sm rounded-full"
+                  className="px-3 py-1 bg-[#1a1a1a] text-gray-300 text-sm rounded-full border border-[#252525]"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {g}
                 </span>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Credits (Composer/Lyricist) */}
+        {(song.composer || song.lyricist) && (
+          <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
+            <h2
+              className="text-lg font-bold uppercase mb-3"
+              style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
+            >
+              Credits
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {song.composer && (
+                <div>
+                  <span className="text-gray-500 text-xs uppercase tracking-wider" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    Composer
+                  </span>
+                  <p className="text-white mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    {song.composer}
+                  </p>
+                </div>
+              )}
+              {song.lyricist && (
+                <div>
+                  <span className="text-gray-500 text-xs uppercase tracking-wider" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    Lyricist
+                  </span>
+                  <p className="text-white mt-1" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    {song.lyricist}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -233,7 +396,7 @@ export default function SongDetail() {
             </h2>
             <Link
               href={`/artists/${artist.id}`}
-              className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors"
+              className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors border border-[#252525]"
             >
               <div className="w-16 h-16 rounded-full overflow-hidden bg-[#252525] flex-shrink-0">
                 {artist.image ? (
@@ -263,7 +426,7 @@ export default function SongDetail() {
 
         {/* Album Section */}
         {album && (
-          <div className="px-4 sm:px-6 py-6">
+          <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
             <h2
               className="text-lg font-bold uppercase mb-4"
               style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
@@ -272,7 +435,7 @@ export default function SongDetail() {
             </h2>
             <Link
               href={`/albums/${album.id}`}
-              className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors"
+              className="flex items-center gap-4 p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors border border-[#252525]"
             >
               <div className="w-20 h-20 rounded-lg overflow-hidden bg-[#252525] flex-shrink-0">
                 {album.coverImage ? (
@@ -300,6 +463,45 @@ export default function SongDetail() {
                 </div>
               </div>
             </Link>
+          </div>
+        )}
+
+        {/* Related Songs */}
+        {relatedSongs && relatedSongs.length > 0 && (
+          <div className="px-4 sm:px-6 py-6">
+            <h2
+              className="text-lg font-bold uppercase mb-4"
+              style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
+            >
+              More from {song.artistName}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {relatedSongs.map((relatedSong) => (
+                <Link
+                  key={relatedSong.id}
+                  href={`/songs/${relatedSong.id}`}
+                  className="block p-3 rounded-lg bg-[#1a1a1a] hover:bg-[#222] transition-colors border border-[#252525] group"
+                >
+                  <div className="w-full aspect-square rounded overflow-hidden bg-[#252525] mb-2">
+                    {relatedSong.coverImage ? (
+                      <img src={relatedSong.coverImage} alt={relatedSong.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-600">
+                        <Music size={24} />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-white text-sm font-medium truncate group-hover:text-[#00d4ff] transition-colors" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    {relatedSong.title}
+                  </p>
+                  {relatedSong.isTitle && (
+                    <span className="text-[9px] text-[#00d4ff] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      Title Track
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
       </div>

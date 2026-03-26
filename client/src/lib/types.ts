@@ -117,6 +117,9 @@ export interface Song {
   coverImage: string;
   duration?: number;         // 曲の長さ (秒)
   genre?: string[];
+  composer?: string;         // 作曲者
+  lyricist?: string;         // 作詞者
+  arranger?: string;         // 編曲者
   youtubeId?: string;        // YouTube MV ID
   spotifyId?: string;
   appleMusicId?: string;
@@ -370,7 +373,7 @@ export interface ArtistsIndex {
 export interface SongsIndex {
   version: string;
   updatedAt: string;
-  songs: Pick<Song, 'id' | 'title' | 'titleKo' | 'artistId' | 'artistName' | 'coverImage' | 'releaseDate'>[];
+  songs: Pick<Song, 'id' | 'title' | 'titleKo' | 'artistId' | 'artistName' | 'coverImage' | 'releaseDate' | 'albumId' | 'isTitle' | 'duration'>[];
 }
 
 /**

@@ -325,6 +325,74 @@ export function useArtistChartStats(artistId: string | undefined) {
   return { data: stats, loading: !songsChart };
 }
 
+/**
+ * Hook to get song chart stats
+ */
+export function useSongChartStats(songId: string | undefined) {
+  const { data: songsChart } = useSongsChart();
+
+  const songEntry = songsChart?.entries.find(
+    (entry) => entry.songId === songId
+  );
+
+  const stats = {
+    currentRank: songEntry?.rank ?? null,
+    previousRank: songEntry?.previousRank ?? null,
+    peakRank: songEntry?.peakRank ?? songEntry?.rank ?? null,
+    weeksOnChart: songEntry?.weeksOnChart ?? 0,
+    change: songEntry ? (songEntry.previousRank ? songEntry.previousRank - songEntry.rank : null) : null,
+  };
+
+  return { data: stats, loading: !songsChart };
+}
+
+/**
+ * Hook to get album chart stats
+ */
+export function useAlbumChartStats(albumId: string | undefined) {
+  const { data: albumsChart } = useAlbumsChart();
+
+  const albumEntry = albumsChart?.entries.find(
+    (entry) => entry.albumId === albumId
+  );
+
+  const stats = {
+    currentRank: albumEntry?.rank ?? null,
+    previousRank: albumEntry?.previousRank ?? null,
+    peakRank: albumEntry?.peakRank ?? albumEntry?.rank ?? null,
+    weeksOnChart: albumEntry?.weeksOnChart ?? 0,
+    change: albumEntry ? (albumEntry.previousRank ? albumEntry.previousRank - albumEntry.rank : null) : null,
+  };
+
+  return { data: stats, loading: !albumsChart };
+}
+
+/**
+ * Hook to get other songs by same artist
+ */
+export function useRelatedSongs(songId: string | undefined, artistId: string | undefined) {
+  const { data: songsIndex, loading, error } = useSongsIndex();
+
+  const relatedSongs = songsIndex?.songs.filter(
+    (song) => song.artistId === artistId && song.id !== songId
+  ).slice(0, 6) || [];
+
+  return { data: relatedSongs, loading, error };
+}
+
+/**
+ * Hook to get other albums by same artist
+ */
+export function useRelatedAlbums(albumId: string | undefined, artistId: string | undefined) {
+  const { data: albumsIndex, loading, error } = useAlbumsIndex();
+
+  const relatedAlbums = albumsIndex?.albums.filter(
+    (album) => album.artistId === artistId && album.id !== albumId
+  ).slice(0, 6) || [];
+
+  return { data: relatedAlbums, loading, error };
+}
+
 // ============================================
 // Search Hook
 // ============================================
