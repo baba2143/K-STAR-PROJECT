@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import MobileNav from "@/components/MobileNav";
 import SkipLink from "@/components/SkipLink";
+import OfflineIndicator from "@/components/OfflineIndicator";
 
 interface ChartLayoutProps {
   children: ReactNode;
@@ -18,6 +19,7 @@ export default function ChartLayout({ children }: ChartLayoutProps) {
     <div className="min-h-screen bg-[#0a0a0a] text-white flex flex-col">
       <SkipLink />
       <Header />
+      <OfflineIndicator />
 
       <div className="flex flex-1">
         {/* Sidebar - hidden on mobile */}

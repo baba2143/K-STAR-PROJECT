@@ -312,4 +312,121 @@
     clip: auto;
     white-space: normal;
   }
+
+  /* PWA Install Banner */
+  .pwa-install-banner {
+    @apply fixed bottom-16 left-4 right-4 lg:bottom-4 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-4 shadow-xl z-40;
+    @apply flex items-center justify-between gap-4;
+  }
+
+  /* Offline indicator */
+  .offline-indicator {
+    @apply fixed top-[89px] left-0 right-0 bg-yellow-900/90 text-yellow-200 text-center text-xs py-1.5 z-40;
+    @apply font-medium tracking-wide;
+  }
+
+  /* Pull to refresh indicator */
+  .pull-refresh-indicator {
+    @apply fixed top-[89px] left-1/2 -translate-x-1/2 bg-[#1a1a1a] text-white text-xs px-4 py-2 rounded-full shadow-lg z-40;
+    @apply flex items-center gap-2;
+  }
+
+  /* Skeleton loading shimmer */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, #1a1a1a 25%, #252525 50%, #1a1a1a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Image lazy loading placeholder */
+  .img-loading {
+    @apply bg-[#1a1a1a] animate-pulse;
+  }
+
+  /* Touch scroll optimization */
+  .touch-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Prevent text selection on interactive elements */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Optimize for touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    /* Larger hit areas */
+    .touch-target {
+      min-height: 48px;
+      min-width: 48px;
+    }
+
+    /* Disable hover effects that might interfere */
+    .hover-lift:hover {
+      transform: none;
+    }
+
+    /* Active state for touch feedback */
+    .touch-feedback:active {
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
+  }
+
+  /* Landscape orientation adjustments */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .safe-area-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom, 0), 8px);
+    }
+
+    .pb-safe {
+      padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0));
+    }
+  }
+
+  /* Dark mode media query support (system preference) */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: oklch(0.4 0 0);
+    }
+
+    .text-gray-400 {
+      color: #d4d4d4 !important;
+    }
+
+    .text-gray-500 {
+      color: #a3a3a3 !important;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    header, nav, .mobile-nav, aside, footer {
+      display: none !important;
+    }
+
+    main {
+      padding: 0 !important;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+    }
+  }
 }
