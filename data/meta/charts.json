@@ -1,0 +1,50 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2025-03-22T00:00:00Z",
+  "charts": [
+    {
+      "chartType": "songs",
+      "name": "K-STAR TOP 100",
+      "nameKo": "K-STAR TOP 100",
+      "nameJa": "K-STAR TOP 100",
+      "description": "The definitive K-POP songs chart, ranking the top 100 songs based on streaming, downloads, and radio airplay.",
+      "descriptionJa": "ストリーミング、ダウンロード、ラジオ再生数を基にした週間楽曲ランキング TOP 100",
+      "updateSchedule": "毎週金曜 18:00 (KST)",
+      "entryCount": 100,
+      "icon": "music"
+    },
+    {
+      "chartType": "albums",
+      "name": "Album Chart",
+      "nameKo": "앨범 차트",
+      "nameJa": "アルバムチャート",
+      "description": "Weekly album chart based on physical and digital sales.",
+      "descriptionJa": "フィジカル・デジタル売上を基にした週間アルバムランキング",
+      "updateSchedule": "毎週金曜 18:00 (KST)",
+      "entryCount": 100,
+      "icon": "disc"
+    },
+    {
+      "chartType": "artists",
+      "name": "Artist Chart",
+      "nameKo": "아티스트 차트",
+      "nameJa": "アーティストチャート",
+      "description": "Weekly artist chart based on overall performance across all metrics.",
+      "descriptionJa": "総合パフォーマンスを基にした週間アーティストランキング",
+      "updateSchedule": "毎週金曜 18:00 (KST)",
+      "entryCount": 100,
+      "icon": "users"
+    },
+    {
+      "chartType": "streaming",
+      "name": "Streaming Chart",
+      "nameKo": "스트리밍 차트",
+      "nameJa": "ストリーミングチャート",
+      "description": "Weekly chart based on streaming counts from major platforms.",
+      "descriptionJa": "主要プラットフォームのストリーミング数を基にした週間ランキング",
+      "updateSchedule": "毎週金曜 18:00 (KST)",
+      "entryCount": 100,
+      "icon": "headphones"
+    }
+  ]
+}

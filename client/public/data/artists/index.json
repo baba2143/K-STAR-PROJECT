@@ -1,0 +1,206 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2025-03-22T00:00:00Z",
+  "artists": [
+    {
+      "id": "newjeans",
+      "name": "NewJeans",
+      "nameKo": "뉴진스",
+      "type": "group",
+      "gender": "female",
+      "agency": "ADOR",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "active": true
+    },
+    {
+      "id": "bts",
+      "name": "BTS",
+      "nameKo": "방탄소년단",
+      "type": "group",
+      "gender": "male",
+      "agency": "BIGHIT MUSIC",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "active": true
+    },
+    {
+      "id": "aespa",
+      "name": "aespa",
+      "nameKo": "에스파",
+      "type": "group",
+      "gender": "female",
+      "agency": "SM Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6aab7f4e8c5e3e0b7f9f0c8d",
+      "active": true
+    },
+    {
+      "id": "seventeen",
+      "name": "SEVENTEEN",
+      "nameKo": "세븐틴",
+      "type": "group",
+      "gender": "male",
+      "agency": "PLEDIS Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb8b4e5f5e3e5f5e3e5f5e3e5f",
+      "active": true
+    },
+    {
+      "id": "stray-kids",
+      "name": "Stray Kids",
+      "nameKo": "스트레이 키즈",
+      "type": "group",
+      "gender": "male",
+      "agency": "JYP Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb9a7d0c5e5f5e3e5f5e3e5f5e",
+      "active": true
+    },
+    {
+      "id": "illit",
+      "name": "ILLIT",
+      "nameKo": "아일릿",
+      "type": "group",
+      "gender": "female",
+      "agency": "BELIFT LAB",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb1a2b3c4d5e6f7a8b9c0d1e2f",
+      "active": true
+    },
+    {
+      "id": "ive",
+      "name": "IVE",
+      "nameKo": "아이브",
+      "type": "group",
+      "gender": "female",
+      "agency": "Starship Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb2c3d4e5f6a7b8c9d0e1f2a3b",
+      "active": true
+    },
+    {
+      "id": "le-sserafim",
+      "name": "LE SSERAFIM",
+      "nameKo": "르세라핌",
+      "type": "group",
+      "gender": "female",
+      "agency": "SOURCE MUSIC",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb3d4e5f6a7b8c9d0e1f2a3b4c",
+      "active": true
+    },
+    {
+      "id": "blackpink",
+      "name": "BLACKPINK",
+      "nameKo": "블랙핑크",
+      "type": "group",
+      "gender": "female",
+      "agency": "YG Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4d5e6f7a8b9c0d1e2f3a4b5c",
+      "active": true
+    },
+    {
+      "id": "rose",
+      "name": "ROSÉ",
+      "nameKo": "로제",
+      "type": "solo",
+      "gender": "female",
+      "agency": "THE BLACK LABEL",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5e6f7a8b9c0d1e2f3a4b5c6d",
+      "active": true
+    },
+    {
+      "id": "jimin",
+      "name": "Jimin",
+      "nameKo": "지민",
+      "type": "solo",
+      "gender": "male",
+      "agency": "BIGHIT MUSIC",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6f7a8b9c0d1e2f3a4b5c6d7e",
+      "active": true
+    },
+    {
+      "id": "jungkook",
+      "name": "Jung Kook",
+      "nameKo": "정국",
+      "type": "solo",
+      "gender": "male",
+      "agency": "BIGHIT MUSIC",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb7a8b9c0d1e2f3a4b5c6d7e8f",
+      "active": true
+    },
+    {
+      "id": "twice",
+      "name": "TWICE",
+      "nameKo": "트와이스",
+      "type": "group",
+      "gender": "female",
+      "agency": "JYP Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb8b9c0d1e2f3a4b5c6d7e8f9a",
+      "active": true
+    },
+    {
+      "id": "nct-dream",
+      "name": "NCT DREAM",
+      "nameKo": "엔시티 드림",
+      "type": "group",
+      "gender": "male",
+      "agency": "SM Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb9c0d1e2f3a4b5c6d7e8f9a0b",
+      "active": true
+    },
+    {
+      "id": "txt",
+      "name": "TOMORROW X TOGETHER",
+      "nameKo": "투모로우바이투게더",
+      "type": "group",
+      "gender": "male",
+      "agency": "BIGHIT MUSIC",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb0d1e2f3a4b5c6d7e8f9a0b1c",
+      "active": true
+    },
+    {
+      "id": "gidle",
+      "name": "(G)I-DLE",
+      "nameKo": "(여자)아이들",
+      "type": "group",
+      "gender": "female",
+      "agency": "CUBE Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb1e2f3a4b5c6d7e8f9a0b1c2d",
+      "active": true
+    },
+    {
+      "id": "enhypen",
+      "name": "ENHYPEN",
+      "nameKo": "엔하이픈",
+      "type": "group",
+      "gender": "male",
+      "agency": "BELIFT LAB",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb2f3a4b5c6d7e8f9a0b1c2d3e",
+      "active": true
+    },
+    {
+      "id": "nmixx",
+      "name": "NMIXX",
+      "nameKo": "엔믹스",
+      "type": "group",
+      "gender": "female",
+      "agency": "JYP Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb3a4b5c6d7e8f9a0b1c2d3e4f",
+      "active": true
+    },
+    {
+      "id": "ateez",
+      "name": "ATEEZ",
+      "nameKo": "에이티즈",
+      "type": "group",
+      "gender": "male",
+      "agency": "KQ Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4b5c6d7e8f9a0b1c2d3e4f5a",
+      "active": true
+    },
+    {
+      "id": "riize",
+      "name": "RIIZE",
+      "nameKo": "라이즈",
+      "type": "group",
+      "gender": "male",
+      "agency": "SM Entertainment",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5c6d7e8f9a0b1c2d3e4f5a6b",
+      "active": true
+    }
+  ]
+}

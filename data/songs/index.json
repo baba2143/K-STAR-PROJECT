@@ -1,0 +1,186 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2025-03-22T00:00:00Z",
+  "songs": [
+    {
+      "id": "newjeans-supernatural",
+      "title": "Supernatural",
+      "titleKo": "Supernatural",
+      "artistId": "newjeans",
+      "artistName": "NewJeans",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a10b8c7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-06-21"
+    },
+    {
+      "id": "newjeans-how-sweet",
+      "title": "How Sweet",
+      "titleKo": "How Sweet",
+      "artistId": "newjeans",
+      "artistName": "NewJeans",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b10c8d7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-05-24"
+    },
+    {
+      "id": "rose-apt",
+      "title": "APT.",
+      "titleKo": "APT.",
+      "artistId": "rose",
+      "artistName": "ROSÉ & Bruno Mars",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c10d8e7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-10-18"
+    },
+    {
+      "id": "illit-magnetic",
+      "title": "Magnetic",
+      "titleKo": "Magnetic",
+      "artistId": "illit",
+      "artistName": "ILLIT",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d10e8f7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-03-25"
+    },
+    {
+      "id": "aespa-supernova",
+      "title": "Supernova",
+      "titleKo": "Supernova",
+      "artistId": "aespa",
+      "artistName": "aespa",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e10f8a7b5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-05-27"
+    },
+    {
+      "id": "aespa-whiplash",
+      "title": "Whiplash",
+      "titleKo": "Whiplash",
+      "artistId": "aespa",
+      "artistName": "aespa",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f10a8b7c5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-10-21"
+    },
+    {
+      "id": "ive-baddie",
+      "title": "Baddie",
+      "titleKo": "Baddie",
+      "artistId": "ive",
+      "artistName": "IVE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a11b8c7d5e8c7d6e5f4a3b2c",
+      "releaseDate": "2023-10-13"
+    },
+    {
+      "id": "ive-heya",
+      "title": "HEYA",
+      "titleKo": "해야",
+      "artistId": "ive",
+      "artistName": "IVE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b12c8d7e5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-04-29"
+    },
+    {
+      "id": "seventeen-super",
+      "title": "SUPER",
+      "titleKo": "손오공",
+      "artistId": "seventeen",
+      "artistName": "SEVENTEEN",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c13d8e7f5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-10-14"
+    },
+    {
+      "id": "le-sserafim-perfect-night",
+      "title": "Perfect Night",
+      "titleKo": "Perfect Night",
+      "artistId": "le-sserafim",
+      "artistName": "LE SSERAFIM",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d14e8f7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2023-10-27"
+    },
+    {
+      "id": "le-sserafim-crazy",
+      "title": "CRAZY",
+      "titleKo": "CRAZY",
+      "artistId": "le-sserafim",
+      "artistName": "LE SSERAFIM",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e15f8a7b5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-08-30"
+    },
+    {
+      "id": "stray-kids-chk-chk-boom",
+      "title": "Chk Chk Boom",
+      "titleKo": "Chk Chk Boom",
+      "artistId": "stray-kids",
+      "artistName": "Stray Kids",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f16a8b7c5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-07-19"
+    },
+    {
+      "id": "jimin-who",
+      "title": "Who",
+      "titleKo": "Who",
+      "artistId": "jimin",
+      "artistName": "Jimin",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a17b8c7d5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-07-19"
+    },
+    {
+      "id": "jungkook-standing-next-to-you",
+      "title": "Standing Next to You",
+      "titleKo": "Standing Next to You",
+      "artistId": "jungkook",
+      "artistName": "Jung Kook",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b18c8d7e5e8c7d6e5f4a3b2c",
+      "releaseDate": "2023-11-03"
+    },
+    {
+      "id": "twice-strategy",
+      "title": "Strategy",
+      "titleKo": "Strategy",
+      "artistId": "twice",
+      "artistName": "TWICE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c19d8e7f5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-12-06"
+    },
+    {
+      "id": "gidle-super-lady",
+      "title": "Super Lady",
+      "titleKo": "Super Lady",
+      "artistId": "gidle",
+      "artistName": "(G)I-DLE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d1ae8f7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-01-29"
+    },
+    {
+      "id": "gidle-fate",
+      "title": "Fate",
+      "titleKo": "Fate",
+      "artistId": "gidle",
+      "artistName": "(G)I-DLE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e1bf8a7b5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-10-14"
+    },
+    {
+      "id": "nct-dream-smoothie",
+      "title": "Smoothie",
+      "titleKo": "Smoothie",
+      "artistId": "nct-dream",
+      "artistName": "NCT DREAM",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f1ca8b7c5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-03-25"
+    },
+    {
+      "id": "riize-boom-boom-bass",
+      "title": "Boom Boom Bass",
+      "titleKo": "Boom Boom Bass",
+      "artistId": "riize",
+      "artistName": "RIIZE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a1db8c7d5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-06-17"
+    },
+    {
+      "id": "enhypen-xo",
+      "title": "XO (Only If You Say Yes)",
+      "titleKo": "XO (Only If You Say Yes)",
+      "artistId": "enhypen",
+      "artistName": "ENHYPEN",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b1ec8d7e5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-07-12"
+    }
+  ]
+}

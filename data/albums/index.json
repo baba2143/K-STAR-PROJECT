@@ -1,0 +1,156 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2025-03-22T00:00:00Z",
+  "albums": [
+    {
+      "id": "newjeans-supernatural",
+      "title": "Supernatural",
+      "titleKo": "Supernatural",
+      "artistId": "newjeans",
+      "artistName": "NewJeans",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a10b8c7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-06-21",
+      "albumType": "single"
+    },
+    {
+      "id": "newjeans-how-sweet",
+      "title": "How Sweet",
+      "titleKo": "How Sweet",
+      "artistId": "newjeans",
+      "artistName": "NewJeans",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b10c8d7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-05-24",
+      "albumType": "single"
+    },
+    {
+      "id": "rose-rosie",
+      "title": "rosie",
+      "titleKo": "rosie",
+      "artistId": "rose",
+      "artistName": "ROSÉ",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c10d8e7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-12-06",
+      "albumType": "full"
+    },
+    {
+      "id": "illit-super-real-me",
+      "title": "SUPER REAL ME",
+      "titleKo": "SUPER REAL ME",
+      "artistId": "illit",
+      "artistName": "ILLIT",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d10e8f7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-03-25",
+      "albumType": "mini"
+    },
+    {
+      "id": "aespa-armageddon",
+      "title": "Armageddon",
+      "titleKo": "Armageddon",
+      "artistId": "aespa",
+      "artistName": "aespa",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e10f8a7b5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-05-27",
+      "albumType": "full"
+    },
+    {
+      "id": "aespa-whiplash",
+      "title": "Whiplash",
+      "titleKo": "Whiplash",
+      "artistId": "aespa",
+      "artistName": "aespa",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f10a8b7c5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-10-21",
+      "albumType": "mini"
+    },
+    {
+      "id": "seventeen-spill-the-feels",
+      "title": "SPILL THE FEELS",
+      "titleKo": "SPILL THE FEELS",
+      "artistId": "seventeen",
+      "artistName": "SEVENTEEN",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c13d8e7f5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-10-14",
+      "albumType": "full"
+    },
+    {
+      "id": "le-sserafim-crazy",
+      "title": "CRAZY",
+      "titleKo": "CRAZY",
+      "artistId": "le-sserafim",
+      "artistName": "LE SSERAFIM",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e15f8a7b5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-08-30",
+      "albumType": "mini"
+    },
+    {
+      "id": "ive-switch",
+      "title": "IVE SWITCH",
+      "titleKo": "IVE SWITCH",
+      "artistId": "ive",
+      "artistName": "IVE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b12c8d7e5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-04-29",
+      "albumType": "mini"
+    },
+    {
+      "id": "stray-kids-ate",
+      "title": "ATE",
+      "titleKo": "ATE",
+      "artistId": "stray-kids",
+      "artistName": "Stray Kids",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f16a8b7c5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-07-19",
+      "albumType": "full"
+    },
+    {
+      "id": "jimin-muse",
+      "title": "MUSE",
+      "titleKo": "MUSE",
+      "artistId": "jimin",
+      "artistName": "Jimin",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a17b8c7d5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-07-19",
+      "albumType": "mini"
+    },
+    {
+      "id": "jungkook-golden",
+      "title": "GOLDEN",
+      "titleKo": "GOLDEN",
+      "artistId": "jungkook",
+      "artistName": "Jung Kook",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b18c8d7e5e8c7d6e5f4a3b2c",
+      "releaseDate": "2023-11-03",
+      "albumType": "full"
+    },
+    {
+      "id": "twice-strategy",
+      "title": "STRATEGY",
+      "titleKo": "STRATEGY",
+      "artistId": "twice",
+      "artistName": "TWICE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c19d8e7f5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-12-06",
+      "albumType": "full"
+    },
+    {
+      "id": "gidle-2",
+      "title": "2",
+      "titleKo": "2",
+      "artistId": "gidle",
+      "artistName": "(G)I-DLE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d1ae8f7a5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-01-29",
+      "albumType": "full"
+    },
+    {
+      "id": "riize-riizing",
+      "title": "RIIZING",
+      "titleKo": "RIIZING",
+      "artistId": "riize",
+      "artistName": "RIIZE",
+      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a1db8c7d5e8c7d6e5f4a3b2c",
+      "releaseDate": "2024-06-17",
+      "albumType": "mini"
+    }
+  ]
+}
