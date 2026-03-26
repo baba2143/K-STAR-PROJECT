@@ -287,6 +287,44 @@ export function useArtistAlbums(artistId: string | undefined) {
   return { data: albums, loading, error };
 }
 
+/**
+ * Hook to get related artists (same agency)
+ */
+export function useRelatedArtists(artistId: string | undefined, agency: string | undefined) {
+  const { data: artistsIndex, loading, error } = useArtistsIndex();
+
+  const relatedArtists = artistsIndex?.artists.filter(
+    (artist) => artist.agency === agency && artist.id !== artistId
+  ).slice(0, 6) || [];
+
+  return { data: relatedArtists, loading, error };
+}
+
+/**
+ * Hook to get artist chart stats
+ */
+export function useArtistChartStats(artistId: string | undefined) {
+  const { data: songsChart } = useSongsChart();
+
+  // Calculate stats from songs chart
+  const artistEntries = songsChart?.entries.filter(
+    (entry) => entry.artistId === artistId
+  ) || [];
+
+  const stats = {
+    currentChartEntries: artistEntries.length,
+    highestRank: artistEntries.length > 0
+      ? Math.min(...artistEntries.map(e => e.rank))
+      : null,
+    totalWeeksOnChart: artistEntries.reduce((acc, e) => acc + e.weeksOnChart, 0),
+    topSong: artistEntries.length > 0
+      ? artistEntries.reduce((best, e) => e.rank < best.rank ? e : best)
+      : null,
+  };
+
+  return { data: stats, loading: !songsChart };
+}
+
 // ============================================
 // Search Hook
 // ============================================
