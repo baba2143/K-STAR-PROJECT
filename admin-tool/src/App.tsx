@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { ChartEditor } from "@/components/charts/ChartEditor";
+import { CategoryManager } from "@/components/categories/CategoryManager";
 import { ArtistManager } from "@/components/artists/ArtistManager";
 import { SongManager } from "@/components/songs/SongManager";
 import { AlbumManager } from "@/components/albums/AlbumManager";
@@ -9,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import { downloadJSON, generateChartJSON, generateArtistsIndexJSON, generateSongsIndexJSON, generateAlbumsIndexJSON } from "@/lib/export";
 import type { Artist, Song, Album } from "@/types";
 
-type TabId = "charts" | "artists" | "songs" | "albums" | "import" | "export" | "settings";
+type TabId = "charts" | "categories" | "artists" | "songs" | "albums" | "import" | "export" | "settings";
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("charts");
@@ -91,7 +92,22 @@ function App() {
 
   return (
     <Layout activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as TabId)}>
-      {activeTab === "charts" && <ChartEditor onExport={handleChartExport} />}
+      {activeTab === "charts" && (
+        <ChartEditor
+          onExport={handleChartExport}
+          songs={songs.map((s) => ({
+            id: s.id || "",
+            title: s.title || "",
+            artistId: s.artistId || "",
+            artistName: artists.find((a) => a.id === s.artistId)?.name || "",
+            spotifyId: s.spotifyId,
+            coverImage: s.coverImage,
+          }))}
+          artists={artists.map((a) => ({ id: a.id || "", name: a.name || "" }))}
+        />
+      )}
+
+      {activeTab === "categories" && <CategoryManager />}
 
       {activeTab === "artists" && (
         <ArtistManager initialArtists={artists} onSave={handleArtistsSave} />

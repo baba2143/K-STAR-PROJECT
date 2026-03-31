@@ -172,20 +172,20 @@ export async function loadSong(songId: string): Promise<Song> {
       throw new Error(`Song not found: ${songId}`);
     }
     // Convert index entry to full Song type
+    // Preserve existing fields from index (like spotifyId, coverImage)
     return {
-      ...songFromIndex,
       featuredArtists: undefined,
       albumId: undefined,
       albumName: undefined,
       duration: undefined,
       genre: undefined,
       youtubeId: undefined,
-      spotifyId: undefined,
       appleMusicId: undefined,
       isTitle: undefined,
       lyrics: undefined,
       createdAt: undefined,
       updatedAt: undefined,
+      ...songFromIndex,
     } as Song;
   }
 }

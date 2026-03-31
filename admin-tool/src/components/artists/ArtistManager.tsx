@@ -36,21 +36,23 @@ export function ArtistManager({ initialArtists = [], onSave }: ArtistManagerProp
   );
 
   const handleSave = useCallback(() => {
+    let newArtists: Partial<Artist>[];
     if (editingId) {
-      setArtists((prev) =>
-        prev.map((a) => (a.id === editingId ? { ...formData, id: editingId } : a))
-      );
+      newArtists = artists.map((a) => (a.id === editingId ? { ...formData, id: editingId } : a));
     } else {
       const newArtist = {
         ...formData,
         id: generateId(formData.name || "artist"),
       };
-      setArtists((prev) => [...prev, newArtist]);
+      newArtists = [...artists, newArtist];
     }
+    setArtists(newArtists);
+    // localStorageにも保存
+    localStorage.setItem("kstar-artists", JSON.stringify(newArtists));
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptyArtist());
-  }, [editingId, formData]);
+  }, [editingId, formData, artists]);
 
   const handleEdit = useCallback((artist: Partial<Artist>) => {
     setFormData(artist);
@@ -60,9 +62,12 @@ export function ArtistManager({ initialArtists = [], onSave }: ArtistManagerProp
 
   const handleDelete = useCallback((id: string) => {
     if (confirm("このアーティストを削除しますか？")) {
-      setArtists((prev) => prev.filter((a) => a.id !== id));
+      const newArtists = artists.filter((a) => a.id !== id);
+      setArtists(newArtists);
+      // localStorageにも保存
+      localStorage.setItem("kstar-artists", JSON.stringify(newArtists));
     }
-  }, []);
+  }, [artists]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);

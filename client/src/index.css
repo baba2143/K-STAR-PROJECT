@@ -429,4 +429,18 @@
       color: black !important;
     }
   }
+
+  /* Chart entry hover expand - only for devices with hover capability */
+  @media (hover: hover) {
+    .chart-entry-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  /* Disable hover expand on touch devices */
+  @media (hover: none) {
+    .chart-entry-hover {
+      /* タッチデバイスではホバー展開を無効化 - クリック展開のみ */
+    }
+  }
 }

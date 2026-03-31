@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { Link } from "wouter";
-import { ArrowUp, ArrowDown, Minus, Star, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowUp, ArrowDown, Minus, Star, Plus, ChevronUp, Play, ArrowRight } from "lucide-react";
 import type { ChartEntry as ChartEntryType } from "@/lib/chartData";
 import { toast } from "sonner";
 
@@ -15,6 +15,8 @@ interface ChartEntryProps {
   entry: ChartEntryType & {
     songId?: string;
     artistId?: string;
+    spotifyId?: string;
+    coverImage?: string;
   };
   isTop10?: boolean;
 }
@@ -57,6 +59,10 @@ function TrendIcon({ trend }: { trend: ChartEntryType["trend"] }) {
 export default function ChartEntry({ entry, isTop10 = false }: ChartEntryProps) {
   const [expanded, setExpanded] = useState(false);
   const [starred, setStarred] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Use coverImage from JSON data (pre-fetched via server script)
+  const albumArt = entry.coverImage || entry.image || null;
 
   const handleStar = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -66,11 +72,31 @@ export default function ChartEntry({ entry, isTop10 = false }: ChartEntryProps) 
 
   return (
     <article
-      className="border-b border-[#1a1a1a] transition-colors duration-150 hover:bg-[#111] focus-within:bg-[#111]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
+      className={`relative border-b border-[#1a1a1a] transition-all duration-300 ease-out overflow-hidden ${
+        isHovered ? "bg-transparent" : "hover:bg-[#111]"
+      } focus-within:bg-[#111] chart-entry-hover`}
       aria-label={`ランク${entry.rank}: ${entry.title} by ${entry.artist}`}
     >
+      {/* Hover Background Image */}
+      {isHovered && albumArt && (
+        <div className="absolute inset-0 z-0 overflow-hidden transition-opacity duration-300">
+          <img
+            src={albumArt}
+            alt=""
+            className="w-full h-full object-cover scale-125 blur-sm"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/80 to-black/60" />
+        </div>
+      )}
+
       {/* Main row */}
-      <div className="flex items-center gap-0 px-3 sm:px-5 py-2.5">
+      <div className={`relative z-10 flex items-center gap-0 px-3 sm:px-5 transition-all duration-300 ${
+        isHovered ? "py-5" : "py-2.5"
+      }`}>
 
         {/* Rank number - gradient box for top 10, plain number otherwise */}
         <div className="flex-shrink-0 w-12 flex items-center justify-center mr-2">
@@ -106,10 +132,12 @@ export default function ChartEntry({ entry, isTop10 = false }: ChartEntryProps) 
         </div>
 
         {/* Album art */}
-        <div className="flex-shrink-0 w-11 h-11 mr-3 overflow-hidden bg-[#1a1a1a]">
-          {entry.image ? (
+        <div className={`relative flex-shrink-0 mr-3 overflow-hidden bg-[#1a1a1a] transition-all duration-300 ${
+          isHovered ? "w-14 h-14" : "w-11 h-11"
+        }`}>
+          {albumArt ? (
             <img
-              src={entry.image}
+              src={albumArt}
               alt={`${entry.title}`}
               className="w-full h-full object-cover"
               loading="lazy"
@@ -117,6 +145,12 @@ export default function ChartEntry({ entry, isTop10 = false }: ChartEntryProps) 
           ) : (
             <div className="w-full h-full bg-[#222] flex items-center justify-center text-gray-600 text-xs">
               ♪
+            </div>
+          )}
+          {/* Play overlay on hover */}
+          {isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60 transition-opacity duration-200">
+              <Play size={20} className="text-white" fill="white" />
             </div>
           )}
         </div>
@@ -147,7 +181,18 @@ export default function ChartEntry({ entry, isTop10 = false }: ChartEntryProps) 
               {entry.title}
             </h3>
           )}
-          {entry.artistId ? (
+          {isHovered && entry.artistId ? (
+            <Link
+              href={`/artists/${entry.artistId}`}
+              className="inline-flex items-center gap-1 px-2 py-0.5 mt-1 bg-[#1a1a1a]/80 text-[#00d4ff] rounded-full text-xs font-medium hover:bg-[#252525] transition-colors"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+              }}
+            >
+              {entry.artist}
+              <ArrowRight size={10} />
+            </Link>
+          ) : entry.artistId ? (
             <Link
               href={`/artists/${entry.artistId}`}
               className="text-gray-400 truncate mt-0.5 block hover:text-[#00d4ff] transition-colors"
@@ -250,9 +295,9 @@ export default function ChartEntry({ entry, isTop10 = false }: ChartEntryProps) 
           <div className="flex items-start gap-4 pt-4">
             {/* Larger album art */}
             <div className="w-20 h-20 flex-shrink-0 overflow-hidden bg-[#1a1a1a]">
-              {entry.image ? (
+              {albumArt ? (
                 <img
-                  src={entry.image}
+                  src={albumArt}
                   alt={`${entry.title} album art`}
                   className="w-full h-full object-cover"
                 />

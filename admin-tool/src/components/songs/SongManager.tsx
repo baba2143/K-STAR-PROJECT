@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { Plus, Search, Edit2, Trash2, Save, X, Music } from "lucide-react";
+import { Plus, Search, Edit2, Trash2, Save, X, Music, Loader2 } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { Song } from "@/types";
 
@@ -10,12 +10,78 @@ interface SongManagerProps {
   onSave?: (songs: Partial<Song>[]) => void;
 }
 
+// Spotify API Server URL (run: node scripts/spotify-server.js)
+const SPOTIFY_API_URL = 'http://localhost:3100';
+
+// Fetch track info from local Spotify API server
+async function fetchSpotifyTrackInfo(trackId: string): Promise<{
+  title: string;
+  artist: string;
+  album: string;
+  releaseDate: string;
+  coverImage: string;
+  duration: number;
+} | null> {
+  try {
+    const res = await fetch(`${SPOTIFY_API_URL}/api/spotify/track/${trackId}`);
+    if (!res.ok) {
+      // Fallback to oEmbed if server not running
+      return fetchSpotifyOEmbed(trackId);
+    }
+    const data = await res.json();
+    return {
+      title: data.title,
+      artist: data.artist,
+      album: data.album,
+      releaseDate: data.releaseDate,
+      coverImage: data.coverImage || data.coverImageMedium,
+      duration: data.duration,
+    };
+  } catch {
+    // Fallback to oEmbed if server not running
+    return fetchSpotifyOEmbed(trackId);
+  }
+}
+
+// Fallback: Fetch from Spotify oEmbed API (limited info)
+async function fetchSpotifyOEmbed(trackId: string): Promise<{
+  title: string;
+  artist: string;
+  album: string;
+  releaseDate: string;
+  coverImage: string;
+  duration: number;
+} | null> {
+  try {
+    const url = `https://open.spotify.com/oembed?url=https://open.spotify.com/track/${trackId}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    // Parse title from oEmbed (limited parsing)
+    const titleMatch = data.title?.match(/^(.+?)\s*-\s*(?:song(?:\s+and\s+lyrics)?)\s+by\s+(.+?)\s*\|/i);
+
+    return {
+      title: titleMatch ? titleMatch[1].trim() : (data.title?.replace(/\s*\|\s*Spotify$/, "") || ""),
+      artist: titleMatch ? titleMatch[2].trim() : "",
+      album: "",
+      releaseDate: "",
+      coverImage: data.thumbnail_url || "",
+      duration: 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function SongManager({ initialSongs = [], artists = [], albums = [], onSave }: SongManagerProps) {
   const [songs, setSongs] = useState<Partial<Song>[]>(initialSongs);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<Partial<Song>>(createEmptySong());
+  const [isLoadingSpotify, setIsLoadingSpotify] = useState(false);
+  const [spotifyArtistHint, setSpotifyArtistHint] = useState<string>("");
 
   // Update songs when initialSongs changes
   useEffect(() => {
@@ -38,18 +104,17 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
     const selectedArtist = artists.find((a) => a.id === formData.artistId);
     const selectedAlbum = albums.find((a) => a.id === formData.albumId);
 
+    let newSongs: Partial<Song>[];
     if (editingId) {
-      setSongs((prev) =>
-        prev.map((s) =>
-          s.id === editingId
-            ? {
-                ...formData,
-                id: editingId,
-                artistName: selectedArtist?.name || formData.artistName,
-                albumName: selectedAlbum?.title,
-              }
-            : s
-        )
+      newSongs = songs.map((s) =>
+        s.id === editingId
+          ? {
+              ...formData,
+              id: editingId,
+              artistName: selectedArtist?.name || formData.artistName,
+              albumName: selectedAlbum?.title,
+            }
+          : s
       );
     } else {
       const newSong: Partial<Song> = {
@@ -58,12 +123,15 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
         artistName: selectedArtist?.name || formData.artistName || "",
         albumName: selectedAlbum?.title,
       };
-      setSongs((prev) => [...prev, newSong]);
+      newSongs = [...songs, newSong];
     }
+    setSongs(newSongs);
+    // localStorageにも保存
+    localStorage.setItem("kstar-songs", JSON.stringify(newSongs));
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptySong());
-  }, [editingId, formData, artists, albums]);
+  }, [editingId, formData, artists, albums, songs]);
 
   const handleEdit = useCallback((song: Partial<Song>) => {
     setFormData(song);
@@ -73,14 +141,18 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
 
   const handleDelete = useCallback((id: string) => {
     if (confirm("この楽曲を削除しますか？")) {
-      setSongs((prev) => prev.filter((s) => s.id !== id));
+      const newSongs = songs.filter((s) => s.id !== id);
+      setSongs(newSongs);
+      // localStorageにも保存
+      localStorage.setItem("kstar-songs", JSON.stringify(newSongs));
     }
-  }, []);
+  }, [songs]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptySong());
+    setSpotifyArtistHint("");
   }, []);
 
   const handleExport = useCallback(() => {
@@ -101,6 +173,7 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
               onClick={() => {
                 setFormData(createEmptySong());
                 setEditingId(null);
+                setSpotifyArtistHint("");
                 setShowForm(true);
               }}
             >
@@ -216,14 +289,84 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
                 }
                 placeholder="dQw4w9WgXcQ"
               />
-              <Input
-                label="Spotify ID"
-                value={formData.spotifyId || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, spotifyId: e.target.value }))
-                }
-                placeholder="4uLU6hMCjMI75M1A2tKUQC"
-              />
+              <div className="relative">
+                <Input
+                  label="Spotify (ID / URL / iframe)"
+                  value={formData.spotifyId || ""}
+                  onChange={async (e) => {
+                    const value = e.target.value;
+                    // Extract ID from various formats:
+                    // 1. Full URL: https://open.spotify.com/track/ID or /intl-ja/track/ID
+                    // 2. Embed URL: https://open.spotify.com/embed/track/ID
+                    // 3. Iframe: <iframe ... src="https://open.spotify.com/embed/track/ID?..." ...>
+                    // 4. Album URL/iframe: https://open.spotify.com/embed/album/ID (will extract but warn)
+                    // 5. Just ID: 22-character alphanumeric string
+                    let spotifyId = "";
+
+                    // Try to extract from track/ pattern (handles URLs and iframes)
+                    const trackMatch = value.match(/track\/([a-zA-Z0-9]{22})/);
+                    if (trackMatch) {
+                      spotifyId = trackMatch[1];
+                    } else {
+                      // Try album pattern as fallback
+                      const albumMatch = value.match(/album\/([a-zA-Z0-9]{22})/);
+                      if (albumMatch) {
+                        // Album ID detected - store it but it won't auto-fetch track info
+                        spotifyId = albumMatch[1];
+                        console.log("注意: アルバムIDが検出されました。楽曲情報の自動取得には楽曲(track)のURLを使用してください。");
+                      } else {
+                        // Check if it's a raw 22-character ID
+                        const rawIdMatch = value.trim().match(/^[a-zA-Z0-9]{22}$/);
+                        if (rawIdMatch) {
+                          spotifyId = value.trim();
+                        } else {
+                          // Store raw value for display, but don't use as ID
+                          spotifyId = value.trim();
+                        }
+                      }
+                    }
+                    setFormData((prev) => ({ ...prev, spotifyId }));
+                    setSpotifyArtistHint("");
+
+                    // Auto-fetch track info if we have a valid Spotify ID
+                    if (spotifyId && spotifyId.length >= 20) {
+                      setIsLoadingSpotify(true);
+                      const info = await fetchSpotifyTrackInfo(spotifyId);
+                      setIsLoadingSpotify(false);
+
+                      if (info) {
+                        // Try to find matching artist in the dropdown
+                        const matchingArtist = artists.find(
+                          (a) => a.name.toLowerCase() === info.artist.toLowerCase()
+                        );
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          title: prev.title || info.title,
+                          artistId: prev.artistId || matchingArtist?.id || "",
+                          coverImage: prev.coverImage || info.coverImage,
+                          releaseDate: prev.releaseDate || info.releaseDate,
+                          duration: prev.duration || info.duration,
+                        }));
+
+                        // Show artist hint if not auto-matched
+                        if (info.artist && !matchingArtist) {
+                          setSpotifyArtistHint(info.artist);
+                        }
+                      }
+                    }
+                  }}
+                  placeholder="ID、URL、またはiframeコードを貼り付け"
+                />
+                {isLoadingSpotify && (
+                  <Loader2 className="absolute right-3 top-9 w-4 h-4 text-primary animate-spin" />
+                )}
+                {spotifyArtistHint && (
+                  <p className="text-xs text-primary mt-1">
+                    Spotifyから取得: {spotifyArtistHint}
+                  </p>
+                )}
+              </div>
               <div className="col-span-2 flex items-center gap-2">
                 <input
                   type="checkbox"

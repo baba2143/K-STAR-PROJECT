@@ -40,17 +40,16 @@ export function AlbumManager({ initialAlbums = [], artists = [], onSave }: Album
     // Find artist name from artists list
     const selectedArtist = artists.find((a) => a.id === formData.artistId);
 
+    let newAlbums: Partial<Album>[];
     if (editingId) {
-      setAlbums((prev) =>
-        prev.map((a) =>
-          a.id === editingId
-            ? {
-                ...formData,
-                id: editingId,
-                artistName: selectedArtist?.name || formData.artistName,
-              }
-            : a
-        )
+      newAlbums = albums.map((a) =>
+        a.id === editingId
+          ? {
+              ...formData,
+              id: editingId,
+              artistName: selectedArtist?.name || formData.artistName,
+            }
+          : a
       );
     } else {
       const newAlbum: Partial<Album> = {
@@ -58,12 +57,15 @@ export function AlbumManager({ initialAlbums = [], artists = [], onSave }: Album
         id: generateId(formData.title || "album"),
         artistName: selectedArtist?.name || formData.artistName || "",
       };
-      setAlbums((prev) => [...prev, newAlbum]);
+      newAlbums = [...albums, newAlbum];
     }
+    setAlbums(newAlbums);
+    // localStorageにも保存
+    localStorage.setItem("kstar-albums", JSON.stringify(newAlbums));
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptyAlbum());
-  }, [editingId, formData, artists]);
+  }, [editingId, formData, artists, albums]);
 
   const handleEdit = useCallback((album: Partial<Album>) => {
     setFormData(album);
@@ -73,9 +75,12 @@ export function AlbumManager({ initialAlbums = [], artists = [], onSave }: Album
 
   const handleDelete = useCallback((id: string) => {
     if (confirm("このアルバムを削除しますか？")) {
-      setAlbums((prev) => prev.filter((a) => a.id !== id));
+      const newAlbums = albums.filter((a) => a.id !== id);
+      setAlbums(newAlbums);
+      // localStorageにも保存
+      localStorage.setItem("kstar-albums", JSON.stringify(newAlbums));
     }
-  }, []);
+  }, [albums]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);

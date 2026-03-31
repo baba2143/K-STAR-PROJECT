@@ -31,10 +31,11 @@
       "titleKo": "Supernatural",
       "artist": "NewJeans",
       "artistId": "newjeans",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a10b8c7a5e8c7d6e5f4a3b2c",
+      "spotifyId": "1CPZ5BxNNd0n0nF4Orb9JS",
       "albumName": "Supernatural",
       "streams": 45200000,
-      "downloads": 125000
+      "downloads": 125000,
+      "coverImage": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e024dcb6c5df15cf74596ab25a4"
     },
     {
       "rank": 2,
@@ -47,10 +48,11 @@
       "titleKo": "APT.",
       "artist": "ROSÉ & Bruno Mars",
       "artistId": "rose",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c10d8e7a5e8c7d6e5f4a3b2c",
+      "spotifyId": "4g5eopb54XIaV2ciooY3St",
       "albumName": "rosie",
       "streams": 42800000,
-      "downloads": 98000
+      "downloads": 98000,
+      "coverImage": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02ba4fa604f046ff824331f4f4"
     },
     {
       "rank": 3,
@@ -64,10 +66,11 @@
       "titleKo": "Magnetic",
       "artist": "ILLIT",
       "artistId": "illit",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d10e8f7a5e8c7d6e5f4a3b2c",
+      "spotifyId": "5H1sKFMzDeMtXwND3V6hRY",
       "albumName": "SUPER REAL ME",
       "streams": 38500000,
-      "downloads": 156000
+      "downloads": 156000,
+      "coverImage": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e026224d1236b0e0a0e1586efbb"
     },
     {
       "rank": 4,
@@ -80,10 +83,11 @@
       "titleKo": "Supernova",
       "artist": "aespa",
       "artistId": "aespa",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e10f8a7b5e8c7d6e5f4a3b2c",
+      "spotifyId": "1xOqGUkyxGQRdCvGpvWKmL",
       "albumName": "Armageddon",
       "streams": 35200000,
-      "downloads": 78000
+      "downloads": 78000,
+      "coverImage": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02f8d4d00ffe09373efb13ce29"
     },
     {
       "rank": 5,
@@ -96,10 +100,11 @@
       "titleKo": "손오공",
       "artist": "SEVENTEEN",
       "artistId": "seventeen",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c13d8e7f5e8c7d6e5f4a3b2c",
+      "spotifyId": "3sLiDI1uLpOttqjFyYUA68",
       "albumName": "SPILL THE FEELS",
       "streams": 32100000,
-      "downloads": 145000
+      "downloads": 145000,
+      "coverImage": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02a67adbf871db9d8ce78bbcb2"
     },
     {
       "rank": 6,
@@ -112,7 +117,7 @@
       "titleKo": "CRAZY",
       "artist": "LE SSERAFIM",
       "artistId": "le-sserafim",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e15f8a7b5e8c7d6e5f4a3b2c",
+      "spotifyId": "7lk1O9vfMuBZYTGmLPaOqJ",
       "albumName": "CRAZY",
       "streams": 29800000,
       "downloads": 67000
@@ -128,7 +133,7 @@
       "titleKo": "Whiplash",
       "artist": "aespa",
       "artistId": "aespa",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f10a8b7c5e8c7d6e5f4a3b2c",
+      "spotifyId": "2DwSvxnZQcmhzXzeVv2Y6b",
       "albumName": "Whiplash",
       "streams": 28500000,
       "downloads": 72000
@@ -144,7 +149,7 @@
       "titleKo": "해야",
       "artist": "IVE",
       "artistId": "ive",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b12c8d7e5e8c7d6e5f4a3b2c",
+      "spotifyId": "21LGk4eyzfm2ziMGbeVINP",
       "albumName": "IVE SWITCH",
       "streams": 26200000,
       "downloads": 89000
@@ -160,10 +165,11 @@
       "titleKo": "Who",
       "artist": "Jimin",
       "artistId": "jimin",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a17b8c7d5e8c7d6e5f4a3b2c",
+      "spotifyId": "1pKYYY0dkg23sQQXi0Q5zN",
       "albumName": "MUSE",
       "streams": 25100000,
-      "downloads": 115000
+      "downloads": 115000,
+      "coverImage": "https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e028ac778cc7d88779f74d33311"
     },
     {
       "rank": 10,
@@ -176,7 +182,7 @@
       "titleKo": "Chk Chk Boom",
       "artist": "Stray Kids",
       "artistId": "stray-kids",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f16a8b7c5e8c7d6e5f4a3b2c",
+      "spotifyId": "6lXKNdOuPVFGMhyCqULEpJ",
       "albumName": "ATE",
       "streams": 23800000,
       "downloads": 134000
@@ -192,7 +198,7 @@
       "titleKo": "Super Lady",
       "artist": "(G)I-DLE",
       "artistId": "gidle",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d1ae8f7a5e8c7d6e5f4a3b2c",
+      "spotifyId": "0XFAVZ3S4aHCBbV3FQqkm0",
       "albumName": "2",
       "streams": 22500000,
       "downloads": 56000
@@ -208,7 +214,7 @@
       "titleKo": "Fate",
       "artist": "(G)I-DLE",
       "artistId": "gidle",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273e1bf8a7b5e8c7d6e5f4a3b2c",
+      "spotifyId": "0UPjGHzJyEvxL3UBJiCqbK",
       "albumName": "I SWAY",
       "streams": 21200000,
       "downloads": 48000
@@ -224,10 +230,11 @@
       "titleKo": "How Sweet",
       "artist": "NewJeans",
       "artistId": "newjeans",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b10c8d7a5e8c7d6e5f4a3b2c",
+      "spotifyId": "38tXZcL1gZRfbqfOG0VMTH",
       "albumName": "How Sweet",
       "streams": 20800000,
-      "downloads": 42000
+      "downloads": 42000,
+      "coverImage": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02b657fbb27b17e7bd4691c2b2"
     },
     {
       "rank": 14,
@@ -240,7 +247,7 @@
       "titleKo": "Standing Next to You",
       "artist": "Jung Kook",
       "artistId": "jungkook",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b18c8d7e5e8c7d6e5f4a3b2c",
+      "spotifyId": "6xGruZOHLs39ZbVccQTuPV",
       "albumName": "GOLDEN",
       "streams": 19500000,
       "downloads": 38000
@@ -256,7 +263,7 @@
       "titleKo": "Strategy",
       "artist": "TWICE",
       "artistId": "twice",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273c19d8e7f5e8c7d6e5f4a3b2c",
+      "spotifyId": "3E9DLDwjIgMJ4YAHk1GmQH",
       "albumName": "STRATEGY",
       "streams": 18200000,
       "downloads": 65000
@@ -272,7 +279,7 @@
       "titleKo": "Boom Boom Bass",
       "artist": "RIIZE",
       "artistId": "riize",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a1db8c7d5e8c7d6e5f4a3b2c",
+      "spotifyId": "0C8eNLPqT26n8LqyqJPhz6",
       "albumName": "RIIZING",
       "streams": 17100000,
       "downloads": 78000
@@ -288,7 +295,7 @@
       "titleKo": "XO (Only If You Say Yes)",
       "artist": "ENHYPEN",
       "artistId": "enhypen",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273b1ec8d7e5e8c7d6e5f4a3b2c",
+      "spotifyId": "0fbyQQJVjKNf33wwHVc9uj",
       "albumName": "ROMANCE : UNTOLD",
       "streams": 16500000,
       "downloads": 92000
@@ -304,7 +311,7 @@
       "titleKo": "Smoothie",
       "artist": "NCT DREAM",
       "artistId": "nct-dream",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273f1ca8b7c5e8c7d6e5f4a3b2c",
+      "spotifyId": "54EWjxSZ8N9s2l8mSQb9oJ",
       "albumName": "DREAM( )SCAPE",
       "streams": 15800000,
       "downloads": 68000
@@ -320,7 +327,7 @@
       "titleKo": "Baddie",
       "artist": "IVE",
       "artistId": "ive",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273a11b8c7d5e8c7d6e5f4a3b2c",
+      "spotifyId": "4lnvVaJY0uB0p2EgG0h3lj",
       "albumName": "I'VE MINE",
       "streams": 14200000,
       "downloads": 35000
@@ -336,7 +343,7 @@
       "titleKo": "Perfect Night",
       "artist": "LE SSERAFIM",
       "artistId": "le-sserafim",
-      "coverImage": "https://i.scdn.co/image/ab67616d0000b273d14e8f7a5e8c7d6e5f4a3b2c",
+      "spotifyId": "2awFPHpP5VkfE7FvVwQVRW",
       "albumName": "Perfect Night",
       "streams": 13500000,
       "downloads": 28000

@@ -9,11 +9,11 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
 import { toast } from "sonner";
-import { sidebarCategories, topCharts } from "@/lib/chartData";
+import { sidebarCategories, kstarCharts, kstarArtistCharts, globalChampCharts } from "@/lib/chartData";
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(["Top Charts"]);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(["K-STAR CHART"]);
 
   const toggleCategory = (label: string) => {
     setExpandedCategories((prev) =>
@@ -57,7 +57,17 @@ export default function Sidebar() {
       <nav className="py-1">
         {sidebarCategories.map((category) => {
           const isExpanded = expandedCategories.includes(category.label);
-          const isTopCharts = category.label === "Top Charts";
+          const isKstarChart = category.label === "K-STAR CHART";
+          const isKstarArtistChart = category.label === "K-STAR ARTIST CHART";
+          const isGlobalChampChart = category.label === "GLOBAL CHAMP CHART";
+          const hasChartItems = isKstarChart || isKstarArtistChart || isGlobalChampChart;
+          const chartItems = isKstarChart
+            ? kstarCharts
+            : isKstarArtistChart
+            ? kstarArtistCharts
+            : isGlobalChampChart
+            ? globalChampCharts
+            : [];
 
           return (
             <div key={category.label}>
@@ -74,10 +84,10 @@ export default function Sidebar() {
                 )}
               </button>
 
-              {/* Sub-items for Top Charts */}
-              {isExpanded && isTopCharts && (
+              {/* Sub-items for K-STAR CHART, K-STAR ARTIST CHART, GLOBAL CHAMP CHART */}
+              {isExpanded && hasChartItems && (
                 <div className="bg-[#080808]">
-                  {topCharts.map((chart) => {
+                  {chartItems.map((chart) => {
                     const isActive = isChartActive(chart.path);
 
                     if (chart.comingSoon) {
@@ -112,7 +122,7 @@ export default function Sidebar() {
               )}
 
               {/* Generic sub-items for other categories */}
-              {isExpanded && !isTopCharts && (
+              {isExpanded && !hasChartItems && (
                 <div className="bg-[#080808] px-5 py-2.5 border-l-2 border-[#1a1a1a]">
                   <p className="text-xs text-gray-600 italic" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     Charts coming soon

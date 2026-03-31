@@ -179,6 +179,7 @@ export interface SongChartEntry extends BaseChartEntry {
   artistId: string;
   coverImage: string;
   albumName?: string;
+  spotifyId?: string;
   // Optional metrics
   streams?: number;
   downloads?: number;

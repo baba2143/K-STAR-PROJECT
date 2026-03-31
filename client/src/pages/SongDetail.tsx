@@ -10,6 +10,7 @@ import { DetailPageSkeleton } from "@/components/ui/Skeleton";
 import { NotFoundState } from "@/components/ui/ErrorState";
 import { useSong, useArtistsIndex, useAlbumsIndex, useSongChartStats, useRelatedSongs } from "@/hooks/useChartData";
 import { cn } from "@/lib/utils";
+import { getSpotifyEmbedUrl } from "@/lib/spotify";
 
 // Custom SVG Icons
 function SpotifyIcon({ className }: { className?: string }) {
@@ -289,6 +290,28 @@ export default function SongDetail() {
 
       {/* Content Sections */}
       <div className="bg-[#0f0f0f] border-t border-[#1e1e1e]">
+        {/* Spotify Embed Player */}
+        {song.spotifyId && (
+          <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
+            <h2
+              className="text-lg font-bold uppercase mb-4"
+              style={{ fontFamily: "'Bebas Neue', cursive", letterSpacing: "0.05em" }}
+            >
+              Listen on Spotify
+            </h2>
+            <iframe
+              src={getSpotifyEmbedUrl(song.spotifyId)}
+              width="100%"
+              height="152"
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              className="rounded-xl"
+              title={`Listen to ${song.title} on Spotify`}
+            />
+          </div>
+        )}
+
         {/* Chart Stats */}
         {chartStats && chartStats.currentRank && (
           <div className="px-4 sm:px-6 py-6 border-b border-[#1e1e1e]">
