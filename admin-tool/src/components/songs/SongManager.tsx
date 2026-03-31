@@ -2,12 +2,14 @@ import { useState, useCallback, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Save, X, Music, Loader2 } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { Song } from "@/types";
+import { saveSongs, deleteSong } from "@/lib/dataApi";
 
 interface SongManagerProps {
   initialSongs?: Partial<Song>[];
   artists?: { id: string; name: string }[];
   albums?: { id: string; title: string; artistId: string }[];
   onSave?: (songs: Partial<Song>[]) => void;
+  onDataChange?: () => void;
 }
 
 // Spotify API Server URL (run: node scripts/spotify-server.js)
@@ -74,7 +76,7 @@ async function fetchSpotifyOEmbed(trackId: string): Promise<{
   }
 }
 
-export function SongManager({ initialSongs = [], artists = [], albums = [], onSave }: SongManagerProps) {
+export function SongManager({ initialSongs = [], artists = [], albums = [], onSave, onDataChange }: SongManagerProps) {
   const [songs, setSongs] = useState<Partial<Song>[]>(initialSongs);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -99,7 +101,7 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
     ? albums.filter((a) => a.artistId === formData.artistId)
     : albums;
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     // Find artist name from artists list
     const selectedArtist = artists.find((a) => a.id === formData.artistId);
     const selectedAlbum = albums.find((a) => a.id === formData.albumId);
@@ -125,13 +127,20 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
       };
       newSongs = [...songs, newSong];
     }
-    setSongs(newSongs);
-    // localStorageにも保存
-    localStorage.setItem("kstar-songs", JSON.stringify(newSongs));
+
+    // Supabaseに保存
+    const success = await saveSongs(newSongs);
+    if (success) {
+      setSongs(newSongs);
+      onDataChange?.();
+    } else {
+      alert("保存に失敗しました");
+    }
+
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptySong());
-  }, [editingId, formData, artists, albums, songs]);
+  }, [editingId, formData, artists, albums, songs, onDataChange]);
 
   const handleEdit = useCallback((song: Partial<Song>) => {
     setFormData(song);
@@ -139,14 +148,17 @@ export function SongManager({ initialSongs = [], artists = [], albums = [], onSa
     setShowForm(true);
   }, []);
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     if (confirm("この楽曲を削除しますか？")) {
-      const newSongs = songs.filter((s) => s.id !== id);
-      setSongs(newSongs);
-      // localStorageにも保存
-      localStorage.setItem("kstar-songs", JSON.stringify(newSongs));
+      const success = await deleteSong(id);
+      if (success) {
+        setSongs((prev) => prev.filter((s) => s.id !== id));
+        onDataChange?.();
+      } else {
+        alert("削除に失敗しました");
+      }
     }
-  }, [songs]);
+  }, [onDataChange]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);

@@ -8,6 +8,7 @@ import { AlbumManager } from "@/components/albums/AlbumManager";
 import { ImportPanel, ExportPanel } from "@/components/ImportExport";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import { downloadJSON, generateChartJSON, generateArtistsIndexJSON, generateSongsIndexJSON, generateAlbumsIndexJSON } from "@/lib/export";
+import { loadArtists, loadSongs, loadAlbums } from "@/lib/dataApi";
 import type { Artist, Song, Album } from "@/types";
 
 type TabId = "charts" | "categories" | "artists" | "songs" | "albums" | "import" | "export" | "settings";
@@ -17,63 +18,56 @@ function App() {
   const [artists, setArtists] = useState<Partial<Artist>[]>([]);
   const [songs, setSongs] = useState<Partial<Song>[]>([]);
   const [albums, setAlbums] = useState<Partial<Album>[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load data from localStorage on mount
+  // Load data from Supabase on mount
   useEffect(() => {
-    const savedArtists = localStorage.getItem("kstar-artists");
-    if (savedArtists) {
+    async function loadData() {
+      setLoading(true);
       try {
-        setArtists(JSON.parse(savedArtists));
-      } catch {
-        // Ignore parse errors
+        const [artistsData, songsData, albumsData] = await Promise.all([
+          loadArtists<Partial<Artist>>(),
+          loadSongs<Partial<Song>>(),
+          loadAlbums<Partial<Album>>(),
+        ]);
+        setArtists(artistsData);
+        setSongs(songsData);
+        setAlbums(albumsData);
+      } catch (error) {
+        console.error('Error loading data from Supabase:', error);
+      } finally {
+        setLoading(false);
       }
     }
-
-    const savedSongs = localStorage.getItem("kstar-songs");
-    if (savedSongs) {
-      try {
-        setSongs(JSON.parse(savedSongs));
-      } catch {
-        // Ignore parse errors
-      }
-    }
-
-    const savedAlbums = localStorage.getItem("kstar-albums");
-    if (savedAlbums) {
-      try {
-        setAlbums(JSON.parse(savedAlbums));
-      } catch {
-        // Ignore parse errors
-      }
-    }
+    loadData();
   }, []);
 
-  // Save artists to localStorage when changed
-  const handleArtistsSave = useCallback((data: Partial<Artist>[]) => {
-    setArtists(data);
-    localStorage.setItem("kstar-artists", JSON.stringify(data));
+  // Reload data function for children to call after mutations
+  const reloadData = useCallback(async () => {
+    const [artistsData, songsData, albumsData] = await Promise.all([
+      loadArtists<Partial<Artist>>(),
+      loadSongs<Partial<Song>>(),
+      loadAlbums<Partial<Album>>(),
+    ]);
+    setArtists(artistsData);
+    setSongs(songsData);
+    setAlbums(albumsData);
+  }, []);
 
-    // Also generate and download the JSON
+  // Export artists as JSON file
+  const handleArtistsExport = useCallback((data: Partial<Artist>[]) => {
     const output = generateArtistsIndexJSON(data);
     downloadJSON(output, "artists-index.json");
   }, []);
 
-  // Save songs to localStorage when changed
-  const handleSongsSave = useCallback((data: Partial<Song>[]) => {
-    setSongs(data);
-    localStorage.setItem("kstar-songs", JSON.stringify(data));
-
-    // Also generate and download the JSON
+  // Export songs as JSON file
+  const handleSongsExport = useCallback((data: Partial<Song>[]) => {
     const output = generateSongsIndexJSON(data);
     downloadJSON(output, "songs-index.json");
   }, []);
 
-  // Save albums to localStorage when changed
-  const handleAlbumsSave = useCallback((data: Partial<Album>[]) => {
-    setAlbums(data);
-    localStorage.setItem("kstar-albums", JSON.stringify(data));
-
-    // Also generate and download the JSON
+  // Export albums as JSON file
+  const handleAlbumsExport = useCallback((data: Partial<Album>[]) => {
     const output = generateAlbumsIndexJSON(data);
     downloadJSON(output, "albums-index.json");
   }, []);
@@ -89,6 +83,17 @@ function App() {
     },
     []
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-bg-dark flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">データを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Layout activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as TabId)}>
@@ -110,7 +115,11 @@ function App() {
       {activeTab === "categories" && <CategoryManager />}
 
       {activeTab === "artists" && (
-        <ArtistManager initialArtists={artists} onSave={handleArtistsSave} />
+        <ArtistManager
+          initialArtists={artists}
+          onSave={handleArtistsExport}
+          onDataChange={reloadData}
+        />
       )}
 
       {activeTab === "songs" && (
@@ -118,7 +127,8 @@ function App() {
           initialSongs={songs}
           artists={artists.map((a) => ({ id: a.id || "", name: a.name || "" }))}
           albums={albums.map((a) => ({ id: a.id || "", title: a.title || "", artistId: a.artistId || "" }))}
-          onSave={handleSongsSave}
+          onSave={handleSongsExport}
+          onDataChange={reloadData}
         />
       )}
 
@@ -126,7 +136,8 @@ function App() {
         <AlbumManager
           initialAlbums={albums}
           artists={artists.map((a) => ({ id: a.id || "", name: a.name || "" }))}
-          onSave={handleAlbumsSave}
+          onSave={handleAlbumsExport}
+          onDataChange={reloadData}
         />
       )}
 
@@ -145,31 +156,29 @@ function App() {
                 データ保存先
               </h3>
               <p className="text-gray-400 text-sm">
-                現在、データはブラウザのローカルストレージに保存されています。
-                エクスポート機能を使用して、JSONファイルとしてダウンロードできます。
+                データはSupabaseクラウドデータベースに保存されています。
+                すべてのデバイスで同期され、永続的に保存されます。
               </p>
+              <div className="mt-2 flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                <span className="text-green-400 text-sm">Supabase接続中</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-gray-300 mb-2">
+                データ統計
+              </h3>
+              <div className="text-gray-400 text-sm space-y-1">
+                <p>アーティスト: {artists.length}件</p>
+                <p>楽曲: {songs.length}件</p>
+                <p>アルバム: {albums.length}件</p>
+              </div>
             </div>
             <div>
               <h3 className="text-sm font-medium text-gray-300 mb-2">
                 バージョン情報
               </h3>
-              <p className="text-gray-400 text-sm">K-STAR Admin Tool v1.0.0</p>
-            </div>
-            <div>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">
-                ローカルストレージのクリア
-              </h3>
-              <button
-                onClick={() => {
-                  if (confirm("すべてのローカルデータを削除しますか？")) {
-                    localStorage.clear();
-                    window.location.reload();
-                  }
-                }}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
-              >
-                データをクリア
-              </button>
+              <p className="text-gray-400 text-sm">K-STAR Admin Tool v1.1.0 (Supabase版)</p>
             </div>
           </CardContent>
         </Card>

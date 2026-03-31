@@ -1,7 +1,8 @@
 import { useState, useCallback } from "react";
-import { GripVertical, Plus, Trash2, ChevronUp, ChevronDown, Download, Search, Music } from "lucide-react";
+import { GripVertical, Plus, Trash2, ChevronUp, ChevronDown, Download, Search, Music, Check } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { ChartType, TrendDirection, SongChartEntry } from "@/types";
+import { saveChart } from "@/lib/dataApi";
 
 // 楽曲データの型
 interface SongData {
@@ -238,8 +239,45 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
     });
   }, []);
 
-  const handleExport = useCallback(() => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const handleExport = useCallback(async () => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+
+    // チャートデータを構築
+    const chartData = {
+      chartType,
+      week,
+      updatedAt: new Date().toISOString(),
+      entries: entries.map((e) => ({
+        rank: e.rank,
+        songId: e.songId,
+        artistId: e.artistId,
+        title: e.title,
+        artist: e.artist,
+        coverImage: e.coverImage,
+        previousRank: e.previousRank,
+        peakPosition: e.peakPosition,
+        weeksOnChart: e.weeksOnChart,
+        trend: e.trend,
+        isNew: e.isNew,
+      })),
+    };
+
+    // Supabaseに保存
+    const success = await saveChart(chartType, week, chartData);
+
+    if (success) {
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 2000);
+    }
+
+    // 従来のエクスポート処理も実行
     onExport?.({ chartType, week, entries });
+
+    setIsSaving(false);
   }, [chartType, week, entries, onExport]);
 
   return (
@@ -248,9 +286,20 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
       <Card>
         <CardHeader>
           <CardTitle>チャート編集</CardTitle>
-          <Button onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
-            JSONエクスポート
+          <Button onClick={handleExport} disabled={isSaving}>
+            {saveSuccess ? (
+              <>
+                <Check className="w-4 h-4 mr-2 text-green-400" />
+                保存完了
+              </>
+            ) : isSaving ? (
+              "保存中..."
+            ) : (
+              <>
+                <Download className="w-4 h-4 mr-2" />
+                保存 & エクスポート
+              </>
+            )}
           </Button>
         </CardHeader>
         <CardContent>

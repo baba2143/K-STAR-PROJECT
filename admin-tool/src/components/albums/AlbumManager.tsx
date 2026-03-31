@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Save, X, Disc3 } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { Album, AlbumType } from "@/types";
+import { saveAlbums, deleteAlbum } from "@/lib/dataApi";
 
 const albumTypeOptions = [
   { value: "full", label: "正規アルバム" },
@@ -16,9 +17,10 @@ interface AlbumManagerProps {
   initialAlbums?: Partial<Album>[];
   artists?: { id: string; name: string }[];
   onSave?: (albums: Partial<Album>[]) => void;
+  onDataChange?: () => void;
 }
 
-export function AlbumManager({ initialAlbums = [], artists = [], onSave }: AlbumManagerProps) {
+export function AlbumManager({ initialAlbums = [], artists = [], onSave, onDataChange }: AlbumManagerProps) {
   const [albums, setAlbums] = useState<Partial<Album>[]>(initialAlbums);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function AlbumManager({ initialAlbums = [], artists = [], onSave }: Album
       album.artistName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     // Find artist name from artists list
     const selectedArtist = artists.find((a) => a.id === formData.artistId);
 
@@ -59,13 +61,20 @@ export function AlbumManager({ initialAlbums = [], artists = [], onSave }: Album
       };
       newAlbums = [...albums, newAlbum];
     }
-    setAlbums(newAlbums);
-    // localStorageにも保存
-    localStorage.setItem("kstar-albums", JSON.stringify(newAlbums));
+
+    // Supabaseに保存
+    const success = await saveAlbums(newAlbums);
+    if (success) {
+      setAlbums(newAlbums);
+      onDataChange?.();
+    } else {
+      alert("保存に失敗しました");
+    }
+
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptyAlbum());
-  }, [editingId, formData, artists, albums]);
+  }, [editingId, formData, artists, albums, onDataChange]);
 
   const handleEdit = useCallback((album: Partial<Album>) => {
     setFormData(album);
@@ -73,14 +82,17 @@ export function AlbumManager({ initialAlbums = [], artists = [], onSave }: Album
     setShowForm(true);
   }, []);
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     if (confirm("このアルバムを削除しますか？")) {
-      const newAlbums = albums.filter((a) => a.id !== id);
-      setAlbums(newAlbums);
-      // localStorageにも保存
-      localStorage.setItem("kstar-albums", JSON.stringify(newAlbums));
+      const success = await deleteAlbum(id);
+      if (success) {
+        setAlbums((prev) => prev.filter((a) => a.id !== id));
+        onDataChange?.();
+      } else {
+        alert("削除に失敗しました");
+      }
     }
-  }, [albums]);
+  }, [onDataChange]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);

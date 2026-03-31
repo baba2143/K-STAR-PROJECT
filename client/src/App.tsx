@@ -19,13 +19,29 @@ function Router() {
       <Route path={"/"} component={Home} />
       {/* Chart Routes */}
       <Route path="/charts/archive" component={ChartArchive} />
-      <Route path="/charts" component={() => <Redirect to="/charts/songs" />} />
-      <Route path="/charts/songs" component={SongChart} />
+      <Route path="/charts" component={() => <Redirect to="/charts/weekly" />} />
+      {/* K-STAR CHART */}
+      <Route path="/charts/weekly" component={SongChart} />
+      <Route path="/charts/weekly/:date" component={SongChart} />
+      <Route path="/charts/monthly" component={SongChart} />
+      <Route path="/charts/season" component={SongChart} />
+      <Route path="/charts/year-end" component={SongChart} />
+      {/* Legacy routes - redirect to new paths */}
+      <Route path="/charts/songs" component={() => <Redirect to="/charts/weekly" />} />
       <Route path="/charts/songs/:date" component={SongChart} />
       <Route path="/charts/albums" component={AlbumChart} />
       <Route path="/charts/albums/:date" component={AlbumChart} />
       <Route path="/charts/artists" component={ArtistChart} />
       <Route path="/charts/artists/:date" component={ArtistChart} />
+      {/* K-STAR ARTIST CHART */}
+      <Route path="/charts/artist/rookie" component={ArtistChart} />
+      <Route path="/charts/artist/solo" component={ArtistChart} />
+      <Route path="/charts/artist/group" component={ArtistChart} />
+      <Route path="/charts/artist/icon" component={ArtistChart} />
+      <Route path="/charts/artist/global" component={ArtistChart} />
+      {/* GLOBAL CHAMP CHART */}
+      <Route path="/charts/global/mv" component={SongChart} />
+      <Route path="/charts/global/hot-mv" component={SongChart} />
       {/* Detail Routes */}
       <Route path="/artists/:id" component={ArtistDetail} />
       <Route path="/songs/:id" component={SongDetail} />

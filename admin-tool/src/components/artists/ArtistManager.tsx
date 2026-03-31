@@ -1,7 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Plus, Search, Edit2, Trash2, Save, X } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { Artist, ArtistType, GenderCategory } from "@/types";
+import { saveArtists, deleteArtist } from "@/lib/dataApi";
 
 const artistTypeOptions = [
   { value: "group", label: "グループ" },
@@ -19,10 +20,16 @@ const genderOptions = [
 interface ArtistManagerProps {
   initialArtists?: Partial<Artist>[];
   onSave?: (artists: Partial<Artist>[]) => void;
+  onDataChange?: () => void;
 }
 
-export function ArtistManager({ initialArtists = [], onSave }: ArtistManagerProps) {
+export function ArtistManager({ initialArtists = [], onSave, onDataChange }: ArtistManagerProps) {
   const [artists, setArtists] = useState<Partial<Artist>[]>(initialArtists);
+
+  // Sync with initialArtists when it changes
+  useEffect(() => {
+    setArtists(initialArtists);
+  }, [initialArtists]);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -35,7 +42,7 @@ export function ArtistManager({ initialArtists = [], onSave }: ArtistManagerProp
       artist.agency?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     let newArtists: Partial<Artist>[];
     if (editingId) {
       newArtists = artists.map((a) => (a.id === editingId ? { ...formData, id: editingId } : a));
@@ -46,13 +53,20 @@ export function ArtistManager({ initialArtists = [], onSave }: ArtistManagerProp
       };
       newArtists = [...artists, newArtist];
     }
-    setArtists(newArtists);
-    // localStorageにも保存
-    localStorage.setItem("kstar-artists", JSON.stringify(newArtists));
+
+    // Supabaseに保存
+    const success = await saveArtists(newArtists);
+    if (success) {
+      setArtists(newArtists);
+      onDataChange?.();
+    } else {
+      alert("保存に失敗しました");
+    }
+
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptyArtist());
-  }, [editingId, formData, artists]);
+  }, [editingId, formData, artists, onDataChange]);
 
   const handleEdit = useCallback((artist: Partial<Artist>) => {
     setFormData(artist);
@@ -60,14 +74,17 @@ export function ArtistManager({ initialArtists = [], onSave }: ArtistManagerProp
     setShowForm(true);
   }, []);
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     if (confirm("このアーティストを削除しますか？")) {
-      const newArtists = artists.filter((a) => a.id !== id);
-      setArtists(newArtists);
-      // localStorageにも保存
-      localStorage.setItem("kstar-artists", JSON.stringify(newArtists));
+      const success = await deleteArtist(id);
+      if (success) {
+        setArtists((prev) => prev.filter((a) => a.id !== id));
+        onDataChange?.();
+      } else {
+        alert("削除に失敗しました");
+      }
     }
-  }, [artists]);
+  }, [onDataChange]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);
