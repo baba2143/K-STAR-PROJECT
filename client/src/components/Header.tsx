@@ -5,9 +5,9 @@
  * Dark (#0a0a0a) background, neon green active states
  */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Search, User } from "lucide-react";
+import { Menu, X, Search, User, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 
 const navItems = [
@@ -18,16 +18,26 @@ const navItems = [
   { label: "About", path: null },
 ];
 
-const quickCharts = [
-  { label: "K-STAR TOP 100", path: "/charts/songs" },
-  { label: "ALBUM CHART", path: "/charts/albums" },
-  { label: "ARTIST CHART", path: "/charts/artists" },
-  { label: "STREAMING", path: null, comingSoon: true },
+// K-STAR CHART submenu items
+const kstarChartSubmenu = [
+  { label: "WEEKLY CHART", path: "/charts/songs" },
+  { label: "MONTHLY CHART", path: null, comingSoon: true },
+  { label: "SEASON CHART", path: null, comingSoon: true },
+  { label: "YEAR-END CHART", path: null, comingSoon: true },
+];
+
+// Main chart navigation items
+const chartNavItems = [
+  { label: "K-STAR CHART", hasSubmenu: true },
+  { label: "K-STAR ARTIST CHART", path: "/charts/artists" },
+  { label: "GLOBAL CHAMP CHART", path: null, comingSoon: true },
 ];
 
 export default function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [chartDropdownOpen, setChartDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handlePlaceholderClick = (label: string) => {
     toast(`${label} — Feature coming soon`);
@@ -36,6 +46,17 @@ export default function Header() {
   const isChartActive = (path: string) => {
     return location.startsWith(path);
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setChartDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 shadow-[0_2px_20px_rgba(0,0,0,0.8)]">
@@ -132,26 +153,90 @@ export default function Header() {
       <div className="bg-[#0d0d0d] border-b border-[#1a1a1a]">
         <div className="max-w-[1440px] mx-auto px-4 overflow-x-auto scrollbar-hide">
           <div className="flex items-center gap-0 whitespace-nowrap">
-            {quickCharts.map((chart) => {
-              const isActive = chart.path ? isChartActive(chart.path) : false;
+            {chartNavItems.map((item) => {
+              // K-STAR CHART with dropdown
+              if (item.hasSubmenu) {
+                const isActive = location.startsWith("/charts/songs") || location === "/";
+                return (
+                  <div key={item.label} className="relative" ref={dropdownRef}>
+                    <button
+                      onClick={() => setChartDropdownOpen(!chartDropdownOpen)}
+                      className={`flex items-center gap-1 px-4 py-2.5 text-[11px] font-bold tracking-widest transition-all duration-150 ${
+                        isActive
+                          ? "border-b-2 border-[#a855f7]"
+                          : "text-gray-500 hover:text-gray-300 border-b-2 border-transparent"
+                      }`}
+                      style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        ...(isActive && {
+                          background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          backgroundClip: "text",
+                        }),
+                      }}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={12}
+                        className={`transition-transform duration-200 ${chartDropdownOpen ? "rotate-180" : ""}`}
+                        style={isActive ? { color: "#a855f7" } : {}}
+                      />
+                    </button>
+                    {/* Dropdown menu */}
+                    {chartDropdownOpen && (
+                      <div className="absolute top-full left-0 mt-0 bg-[#1a1a1a] border border-[#2a2a2a] shadow-lg z-50 min-w-[160px]">
+                        {kstarChartSubmenu.map((subItem) => (
+                          subItem.path && !subItem.comingSoon ? (
+                            <Link
+                              key={subItem.label}
+                              href={subItem.path}
+                              onClick={() => setChartDropdownOpen(false)}
+                              className="block px-4 py-2.5 text-[11px] font-medium tracking-wide text-gray-400 hover:text-white hover:bg-[#252525] transition-colors"
+                              style={{ fontFamily: "'DM Sans', sans-serif" }}
+                            >
+                              {subItem.label}
+                            </Link>
+                          ) : (
+                            <button
+                              key={subItem.label}
+                              onClick={() => {
+                                handlePlaceholderClick(subItem.label);
+                                setChartDropdownOpen(false);
+                              }}
+                              className="block w-full text-left px-4 py-2.5 text-[11px] font-medium tracking-wide text-gray-600 hover:text-gray-400 hover:bg-[#252525] transition-colors"
+                              style={{ fontFamily: "'DM Sans', sans-serif" }}
+                            >
+                              {subItem.label}
+                            </button>
+                          )
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              }
 
-              if (chart.comingSoon || !chart.path) {
+              // Regular nav items
+              const isActive = item.path ? isChartActive(item.path) : false;
+
+              if (item.comingSoon || !item.path) {
                 return (
                   <button
-                    key={chart.label}
-                    onClick={() => handlePlaceholderClick(chart.label)}
+                    key={item.label}
+                    onClick={() => handlePlaceholderClick(item.label)}
                     className="px-4 py-2.5 text-[11px] font-bold tracking-widest text-gray-500 hover:text-gray-300 border-b-2 border-transparent transition-all duration-150"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
-                    {chart.label}
+                    {item.label}
                   </button>
                 );
               }
 
               return (
                 <Link
-                  key={chart.label}
-                  href={chart.path}
+                  key={item.label}
+                  href={item.path}
                   className={`px-4 py-2.5 text-[11px] font-bold tracking-widest transition-all duration-150 ${
                     isActive
                       ? "border-b-2 border-[#a855f7]"
@@ -167,7 +252,7 @@ export default function Header() {
                     }),
                   }}
                 >
-                  {chart.label}
+                  {item.label}
                 </Link>
               );
             })}
