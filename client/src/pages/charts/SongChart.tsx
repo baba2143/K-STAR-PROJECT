@@ -8,7 +8,6 @@ import { Grid3X3, List, Share2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
 import ChartHero from "@/components/charts/ChartHero";
-import ChartTypeSelector from "@/components/charts/ChartTypeSelector";
 import WeekSelector from "@/components/charts/WeekSelector";
 import ChartEntry from "@/components/ChartEntry";
 import { ChartListSkeleton } from "@/components/ui/skeleton";
@@ -95,9 +94,6 @@ export default function SongChart() {
       <div className="bg-[#0f0f0f]">
         {/* Chart Header */}
         <div className="px-4 sm:px-6 pt-5 pb-4 border-b border-[#1e1e1e]">
-          {/* Chart Type Selector */}
-          <ChartTypeSelector className="mb-4" />
-
           <div className="flex items-start justify-between gap-4 flex-wrap">
             {/* Week Navigation */}
             <nav

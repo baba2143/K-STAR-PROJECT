@@ -8,7 +8,6 @@ import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight } from "l
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
 import ChartHero from "@/components/charts/ChartHero";
-import ChartTypeSelector from "@/components/charts/ChartTypeSelector";
 import WeekSelector from "@/components/charts/WeekSelector";
 import { ChartListSkeleton } from "@/components/ui/skeleton";
 import { useAlbumsChart, useAvailableWeeks } from "@/hooks/useChartData";
@@ -74,8 +73,6 @@ export default function AlbumChart() {
       <div className="bg-[#0f0f0f]">
         {/* Chart Header */}
         <div className="px-4 sm:px-6 pt-5 pb-4 border-b border-[#1e1e1e]">
-          <ChartTypeSelector className="mb-4" />
-
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <nav className="flex items-center gap-2" aria-label="チャート週ナビゲーション">
               <button
