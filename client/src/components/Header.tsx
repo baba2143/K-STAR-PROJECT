@@ -151,7 +151,7 @@ export default function Header() {
 
       {/* Quick charts sub-nav */}
       <div className="bg-[#0d0d0d] border-b border-[#1a1a1a]">
-        <div className="max-w-[1440px] mx-auto px-4 overflow-x-auto scrollbar-hide">
+        <div className="max-w-[1440px] mx-auto px-4 overflow-visible">
           <div className="flex items-center gap-0 whitespace-nowrap">
             {chartNavItems.map((item) => {
               // K-STAR CHART with dropdown
