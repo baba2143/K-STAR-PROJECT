@@ -16,7 +16,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import ChartLayout from "@/components/charts/ChartLayout";
-import { DetailPageSkeleton } from "@/components/ui/Skeleton";
+import { DetailPageSkeleton } from "@/components/ui/skeleton";
 import { NotFoundState } from "@/components/ui/ErrorState";
 import {
   useArtist,

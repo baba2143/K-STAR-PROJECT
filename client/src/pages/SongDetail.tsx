@@ -6,7 +6,7 @@
 import { useParams, Link } from "wouter";
 import { ArrowLeft, Calendar, Clock, Music, Disc3, TrendingUp, TrendingDown, Minus, Award, BarChart3 } from "lucide-react";
 import ChartLayout from "@/components/charts/ChartLayout";
-import { DetailPageSkeleton } from "@/components/ui/Skeleton";
+import { DetailPageSkeleton } from "@/components/ui/skeleton";
 import { NotFoundState } from "@/components/ui/ErrorState";
 import { useSong, useArtistsIndex, useAlbumsIndex, useSongChartStats, useRelatedSongs } from "@/hooks/useChartData";
 import { cn } from "@/lib/utils";

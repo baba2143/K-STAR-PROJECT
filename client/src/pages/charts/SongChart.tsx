@@ -11,7 +11,7 @@ import ChartHero from "@/components/charts/ChartHero";
 import ChartTypeSelector from "@/components/charts/ChartTypeSelector";
 import WeekSelector from "@/components/charts/WeekSelector";
 import ChartEntry from "@/components/ChartEntry";
-import { ChartListSkeleton } from "@/components/ui/Skeleton";
+import { ChartListSkeleton } from "@/components/ui/skeleton";
 import { useSongsChart, useAvailableWeeks } from "@/hooks/useChartData";
 import type { ChartEntry as LegacyChartEntry } from "@/lib/chartData";
 import type { SongChartEntry } from "@/lib/types";

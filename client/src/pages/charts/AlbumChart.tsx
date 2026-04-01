@@ -10,7 +10,7 @@ import ChartLayout from "@/components/charts/ChartLayout";
 import ChartHero from "@/components/charts/ChartHero";
 import ChartTypeSelector from "@/components/charts/ChartTypeSelector";
 import WeekSelector from "@/components/charts/WeekSelector";
-import { ChartListSkeleton } from "@/components/ui/Skeleton";
+import { ChartListSkeleton } from "@/components/ui/skeleton";
 import { useAlbumsChart, useAvailableWeeks } from "@/hooks/useChartData";
 import type { AlbumChartEntry } from "@/lib/types";
 import { cn } from "@/lib/utils";
