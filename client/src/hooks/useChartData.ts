@@ -19,11 +19,17 @@ import {
   loadSongsChart,
   loadAlbumsChart,
   loadArtistsChart,
+  loadMonthlyChart,
+  loadSeasonChart,
+  loadYearEndChart,
   loadArtistsIndex,
   loadSongsIndex,
   loadAlbumsIndex,
   loadChartsIndex,
   getAvailableWeeks,
+  getAvailableMonths,
+  getAvailableSeasons,
+  getAvailableYears,
   loadArtist,
   loadSong,
   loadAlbum,
@@ -81,6 +87,36 @@ export function useSongsChart(week?: string) {
   return useAsyncData<ChartWeekData<SongChartEntry>>(
     () => loadSongsChart(week),
     [week]
+  );
+}
+
+/**
+ * Hook to load monthly chart data
+ */
+export function useMonthlyChart(month?: string) {
+  return useAsyncData<ChartWeekData<SongChartEntry>>(
+    () => loadMonthlyChart(month),
+    [month]
+  );
+}
+
+/**
+ * Hook to load season chart data
+ */
+export function useSeasonChart(season?: string) {
+  return useAsyncData<ChartWeekData<SongChartEntry>>(
+    () => loadSeasonChart(season),
+    [season]
+  );
+}
+
+/**
+ * Hook to load year-end chart data
+ */
+export function useYearEndChart(year?: string) {
+  return useAsyncData<ChartWeekData<SongChartEntry>>(
+    () => loadYearEndChart(year),
+    [year]
   );
 }
 
@@ -170,6 +206,36 @@ export function useAvailableWeeks(chartType: ChartType) {
   return useAsyncData<string[]>(
     () => getAvailableWeeks(chartType),
     [chartType]
+  );
+}
+
+/**
+ * Hook to get available months
+ */
+export function useAvailableMonths() {
+  return useAsyncData<string[]>(
+    () => getAvailableMonths(),
+    []
+  );
+}
+
+/**
+ * Hook to get available seasons
+ */
+export function useAvailableSeasons() {
+  return useAsyncData<string[]>(
+    () => getAvailableSeasons(),
+    []
+  );
+}
+
+/**
+ * Hook to get available years
+ */
+export function useAvailableYears() {
+  return useAsyncData<string[]>(
+    () => getAvailableYears(),
+    []
   );
 }
 

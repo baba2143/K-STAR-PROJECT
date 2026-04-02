@@ -124,6 +124,42 @@ export async function loadArtistsChart(week?: string): Promise<ChartWeekData<Art
   return loadLatestChart<ArtistChartEntry>('artists');
 }
 
+/**
+ * Load monthly chart
+ */
+export async function loadMonthlyChart(month?: string): Promise<ChartWeekData<SongChartEntry>> {
+  if (month) {
+    return fetchJSON<ChartWeekData<SongChartEntry>>(`/charts/monthly/${month}.json`);
+  }
+  // Load index and get latest month
+  const index = await fetchJSON<{ latestMonth: string; availableMonths: string[] }>('/charts/monthly/index.json');
+  return fetchJSON<ChartWeekData<SongChartEntry>>(`/charts/monthly/${index.latestMonth}.json`);
+}
+
+/**
+ * Load season chart
+ */
+export async function loadSeasonChart(season?: string): Promise<ChartWeekData<SongChartEntry>> {
+  if (season) {
+    return fetchJSON<ChartWeekData<SongChartEntry>>(`/charts/season/${season}.json`);
+  }
+  // Load index and get latest season
+  const index = await fetchJSON<{ latestSeason: string; availableSeasons: string[] }>('/charts/season/index.json');
+  return fetchJSON<ChartWeekData<SongChartEntry>>(`/charts/season/${index.latestSeason}.json`);
+}
+
+/**
+ * Load year-end chart
+ */
+export async function loadYearEndChart(year?: string): Promise<ChartWeekData<SongChartEntry>> {
+  if (year) {
+    return fetchJSON<ChartWeekData<SongChartEntry>>(`/charts/year-end/${year}.json`);
+  }
+  // Load index and get latest year
+  const index = await fetchJSON<{ latestYear: string; availableYears: string[] }>('/charts/year-end/index.json');
+  return fetchJSON<ChartWeekData<SongChartEntry>>(`/charts/year-end/${index.latestYear}.json`);
+}
+
 // ============================================
 // Detail Loaders
 // ============================================
@@ -276,6 +312,42 @@ export async function searchAll(query: string) {
 export async function getAvailableWeeks(chartType: ChartType): Promise<string[]> {
   const index = await loadChartsIndex();
   return index.charts[chartType]?.availableWeeks || [];
+}
+
+/**
+ * Get available months for monthly chart
+ */
+export async function getAvailableMonths(): Promise<string[]> {
+  try {
+    const index = await fetchJSON<{ availableMonths: string[] }>('/charts/monthly/index.json');
+    return index.availableMonths || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Get available seasons for season chart
+ */
+export async function getAvailableSeasons(): Promise<string[]> {
+  try {
+    const index = await fetchJSON<{ availableSeasons: string[] }>('/charts/season/index.json');
+    return index.availableSeasons || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Get available years for year-end chart
+ */
+export async function getAvailableYears(): Promise<string[]> {
+  try {
+    const index = await fetchJSON<{ availableYears: string[] }>('/charts/year-end/index.json');
+    return index.availableYears || [];
+  } catch {
+    return [];
+  }
 }
 
 /**

@@ -88,9 +88,9 @@ export const sidebarCategories = [
 
 export const kstarCharts = [
   { label: "WEEKLY CHART", path: "/charts/weekly", active: true },
-  { label: "MONTHLY CHART", path: "/charts/monthly", active: false, comingSoon: true },
-  { label: "SEASON CHART", path: "/charts/season", active: false, comingSoon: true },
-  { label: "YEAR-END CHART", path: "/charts/year-end", active: false, comingSoon: true },
+  { label: "MONTHLY CHART", path: "/charts/monthly", active: false },
+  { label: "SEASON CHART", path: "/charts/season", active: false },
+  { label: "YEAR-END CHART", path: "/charts/year-end", active: false },
 ];
 
 export const kstarArtistCharts = [
