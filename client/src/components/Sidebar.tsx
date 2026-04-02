@@ -7,7 +7,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ChevronDown, ChevronRight, Search } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { sidebarCategories, kstarCharts, kstarArtistCharts, globalChampCharts } from "@/lib/chartData";
 
@@ -27,32 +27,6 @@ export default function Sidebar() {
 
   return (
     <aside className="w-full bg-[#0a0a0a] border-r border-[#1a1a1a] h-full overflow-y-auto">
-      {/* Search Charts */}
-      <div className="p-3 border-b border-[#1a1a1a]">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search Charts"
-            className="w-full bg-[#161616] border border-[#2a2a2a] text-white text-xs px-3 py-2 pr-8 focus:outline-none focus:border-[#a855f7] transition-colors placeholder-gray-600"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          />
-          <Search size={11} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-600" />
-        </div>
-      </div>
-
-      {/* Search Artists */}
-      <div className="p-3 border-b border-[#1a1a1a]">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search Artists"
-            className="w-full bg-[#161616] border border-[#2a2a2a] text-white text-xs px-3 py-2 pr-8 focus:outline-none focus:border-[#a855f7] transition-colors placeholder-gray-600"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          />
-          <Search size={11} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-600" />
-        </div>
-      </div>
-
       {/* Categories */}
       <nav className="py-1">
         {sidebarCategories.map((category) => {
