@@ -54,6 +54,30 @@ function ChartListSkeleton({ count = 10 }: { count?: number }) {
   );
 }
 
+// Chart grid item skeleton
+function ChartGridItemSkeleton() {
+  return (
+    <div className="bg-[#1a1a1a] rounded-lg overflow-hidden">
+      <Skeleton className="aspect-square" />
+      <div className="p-3">
+        <Skeleton className="h-4 w-3/4 mb-1.5" />
+        <Skeleton className="h-3 w-1/2" />
+      </div>
+    </div>
+  );
+}
+
+// Chart grid skeleton
+function ChartGridSkeleton({ count = 12 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-4 animate-in fade-in duration-300">
+      {[...Array(count)].map((_, i) => (
+        <ChartGridItemSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
 // Album card skeleton
 function AlbumCardSkeleton() {
   return (
@@ -98,4 +122,4 @@ function DetailPageSkeleton() {
   );
 }
 
-export { Skeleton, ChartEntrySkeleton, ChartListSkeleton, AlbumCardSkeleton, DetailPageSkeleton };
+export { Skeleton, ChartEntrySkeleton, ChartListSkeleton, ChartGridSkeleton, AlbumCardSkeleton, DetailPageSkeleton };
