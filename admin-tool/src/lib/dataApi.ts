@@ -449,6 +449,60 @@ export async function deleteBanner(id: string): Promise<boolean> {
   }
 }
 
+// Banner Image Upload
+export async function uploadBannerImage(file: File, bannerId: string): Promise<string | null> {
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${bannerId}-${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('banners')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      throw uploadError;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('banners')
+      .getPublicUrl(filePath);
+
+    return publicUrl;
+  } catch (error) {
+    console.error('Failed to upload banner image:', error);
+    return null;
+  }
+}
+
+export async function deleteBannerImage(imageUrl: string): Promise<boolean> {
+  try {
+    // Extract file path from URL
+    const url = new URL(imageUrl);
+    const pathParts = url.pathname.split('/');
+    const fileName = pathParts[pathParts.length - 1];
+
+    if (!fileName) {
+      console.error('Could not extract file name from URL');
+      return false;
+    }
+
+    const { error } = await supabase.storage
+      .from('banners')
+      .remove([fileName]);
+
+    if (error) {
+      console.error('Delete error:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Failed to delete banner image:', error);
+    return false;
+  }
+}
+
 // Health check
 export async function checkApiHealth(): Promise<boolean> {
   try {

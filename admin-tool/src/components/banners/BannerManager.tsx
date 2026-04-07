@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
-import { Plus, Search, Edit2, Trash2, Save, X, Image, ExternalLink } from "lucide-react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import { Plus, Search, Edit2, Trash2, Save, X, Image, ExternalLink, Upload, Loader2 } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { ChartBanner, BannerChartType } from "@/types";
-import { saveBanner, deleteBanner } from "@/lib/dataApi";
+import { saveBanner, deleteBanner, uploadBannerImage } from "@/lib/dataApi";
 
 const chartTypeOptions: { value: BannerChartType; label: string }[] = [
   { value: "weekly", label: "WEEKLY CHART" },
@@ -35,6 +35,9 @@ export function BannerManager({ initialBanners = [], onDataChange }: BannerManag
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<Partial<ChartBanner>>(createEmptyBanner());
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filteredBanners = banners.filter(
     (banner) =>
@@ -86,6 +89,51 @@ export function BannerManager({ initialBanners = [], onDataChange }: BannerManag
     setShowForm(false);
     setEditingId(null);
     setFormData(createEmptyBanner());
+  }, []);
+
+  const handleFileUpload = useCallback(async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      alert('画像ファイルを選択してください');
+      return;
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert('ファイルサイズは5MB以下にしてください');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const tempId = editingId || `temp-${Date.now()}`;
+      const url = await uploadBannerImage(file, tempId);
+      if (url) {
+        setFormData((prev) => ({ ...prev, imageUrl: url }));
+      } else {
+        alert('画像のアップロードに失敗しました。Supabase Storageの「banners」バケットが作成されているか確認してください。');
+      }
+    } finally {
+      setUploading(false);
+    }
+  }, [editingId]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [handleFileUpload]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
   }, []);
 
   return (
@@ -158,7 +206,7 @@ export function BannerManager({ initialBanners = [], onDataChange }: BannerManag
                   </label>
                 </div>
               </div>
-              <div className="col-span-2">
+              <div className="col-span-2 space-y-3">
                 <Input
                   label="画像URL"
                   value={formData.imageUrl || ""}
@@ -167,6 +215,54 @@ export function BannerManager({ initialBanners = [], onDataChange }: BannerManag
                   }
                   placeholder="https://example.com/banner.png"
                 />
+                <div className="text-center text-gray-400 text-sm">または</div>
+                <div
+                  className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                    dragOver
+                      ? 'border-primary bg-primary/10'
+                      : 'border-gray-600 hover:border-gray-500'
+                  }`}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleFileUpload(file);
+                      }
+                    }}
+                  />
+                  {uploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                      <p className="text-gray-400">アップロード中...</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Upload className="w-8 h-8 text-gray-400" />
+                      <p className="text-gray-300">
+                        画像をドラッグ&ドロップ
+                      </p>
+                      <p className="text-gray-500 text-sm">または</p>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        ファイルを選択
+                      </Button>
+                      <p className="text-gray-500 text-xs mt-2">
+                        対応形式: PNG, JPG, GIF, WebP (最大5MB)
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="col-span-2">
                 <Input
