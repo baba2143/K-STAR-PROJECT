@@ -132,9 +132,9 @@ export default function HeroSection({ bannerImage, chartName = "K-STAR CHART" }:
             </div>
           </div>
 
-          {/* Banner image - below text on mobile, right side on desktop */}
+          {/* Banner image - centered below text on mobile, right side on desktop */}
           {bannerImage && (
-            <div className="flex-shrink-0 mt-4 sm:mt-0">
+            <div className="flex-shrink-0 mt-4 sm:mt-0 flex justify-center sm:justify-end">
               <img
                 src={bannerImage}
                 alt="Banner"
