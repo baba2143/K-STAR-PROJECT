@@ -438,35 +438,61 @@ export interface ChartBanner {
 }
 
 /**
+ * Get current date in JST (YYYY-MM-DD format)
+ */
+function getCurrentDateJST(): string {
+  const now = new Date();
+  const jstOffset = 9 * 60; // JST is UTC+9
+  const jstTime = new Date(now.getTime() + (jstOffset + now.getTimezoneOffset()) * 60 * 1000);
+  return jstTime.toISOString().split('T')[0];
+}
+
+/**
  * Load active banner for a specific chart type
+ * Filters by date range (startDate/endDate) in JST
  */
 export async function loadChartBanner(chartType: string): Promise<ChartBanner | null> {
   try {
-    const { data, error } = await supabase
+    const today = getCurrentDateJST();
+
+    let query = supabase
       .from('chart_banners')
       .select('*')
       .eq('chart_type', chartType)
-      .eq('is_active', true)
-      .single();
+      .eq('is_active', true);
+
+    // Filter: startDate is null OR startDate <= today
+    query = query.or(`start_date.is.null,start_date.lte.${today}`);
+
+    const { data: banners, error } = await query;
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        // No rows found
-        return null;
-      }
       console.error('Error loading banner:', error);
       return null;
     }
 
+    if (!banners || banners.length === 0) {
+      return null;
+    }
+
+    // Filter endDate on client side (endDate is null OR endDate >= today)
+    const validBanner = banners.find(
+      (b) => !b.end_date || b.end_date >= today
+    );
+
+    if (!validBanner) {
+      return null;
+    }
+
     return {
-      id: data.id,
-      chartType: data.chart_type,
-      imageUrl: data.image_url,
-      linkUrl: data.link_url,
-      altText: data.alt_text,
-      isActive: data.is_active,
-      startDate: data.start_date,
-      endDate: data.end_date,
+      id: validBanner.id,
+      chartType: validBanner.chart_type,
+      imageUrl: validBanner.image_url,
+      linkUrl: validBanner.link_url,
+      altText: validBanner.alt_text,
+      isActive: validBanner.is_active,
+      startDate: validBanner.start_date,
+      endDate: validBanner.end_date,
     };
   } catch (error) {
     console.error('Error loading banner:', error);
