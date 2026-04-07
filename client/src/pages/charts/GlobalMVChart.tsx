@@ -162,7 +162,7 @@ export default function GlobalMVChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection chartName="GLOBAL MV CHART" />
+      <HeroSection chartType="global-mv" chartName="GLOBAL MV CHART" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

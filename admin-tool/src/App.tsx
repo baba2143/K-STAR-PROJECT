@@ -5,19 +5,21 @@ import { CategoryManager } from "@/components/categories/CategoryManager";
 import { ArtistManager } from "@/components/artists/ArtistManager";
 import { SongManager } from "@/components/songs/SongManager";
 import { AlbumManager } from "@/components/albums/AlbumManager";
+import { BannerManager } from "@/components/banners/BannerManager";
 import { ImportPanel, ExportPanel } from "@/components/ImportExport";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import { downloadJSON, generateChartJSON, generateArtistsIndexJSON, generateSongsIndexJSON, generateAlbumsIndexJSON } from "@/lib/export";
-import { loadArtists, loadSongs, loadAlbums } from "@/lib/dataApi";
-import type { Artist, Song, Album } from "@/types";
+import { loadArtists, loadSongs, loadAlbums, loadBanners } from "@/lib/dataApi";
+import type { Artist, Song, Album, ChartBanner } from "@/types";
 
-type TabId = "charts" | "categories" | "artists" | "songs" | "albums" | "import" | "export" | "settings";
+type TabId = "charts" | "banners" | "categories" | "artists" | "songs" | "albums" | "import" | "export" | "settings";
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("charts");
   const [artists, setArtists] = useState<Partial<Artist>[]>([]);
   const [songs, setSongs] = useState<Partial<Song>[]>([]);
   const [albums, setAlbums] = useState<Partial<Album>[]>([]);
+  const [banners, setBanners] = useState<Partial<ChartBanner>[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load data from Supabase on mount
@@ -25,14 +27,16 @@ function App() {
     async function loadData() {
       setLoading(true);
       try {
-        const [artistsData, songsData, albumsData] = await Promise.all([
+        const [artistsData, songsData, albumsData, bannersData] = await Promise.all([
           loadArtists<Partial<Artist>>(),
           loadSongs<Partial<Song>>(),
           loadAlbums<Partial<Album>>(),
+          loadBanners<Partial<ChartBanner>>(),
         ]);
         setArtists(artistsData);
         setSongs(songsData);
         setAlbums(albumsData);
+        setBanners(bannersData);
       } catch (error) {
         console.error('Error loading data from Supabase:', error);
       } finally {
@@ -44,14 +48,16 @@ function App() {
 
   // Reload data function for children to call after mutations
   const reloadData = useCallback(async () => {
-    const [artistsData, songsData, albumsData] = await Promise.all([
+    const [artistsData, songsData, albumsData, bannersData] = await Promise.all([
       loadArtists<Partial<Artist>>(),
       loadSongs<Partial<Song>>(),
       loadAlbums<Partial<Album>>(),
+      loadBanners<Partial<ChartBanner>>(),
     ]);
     setArtists(artistsData);
     setSongs(songsData);
     setAlbums(albumsData);
+    setBanners(bannersData);
   }, []);
 
   // Export artists as JSON file
@@ -109,6 +115,13 @@ function App() {
             coverImage: s.coverImage,
           }))}
           artists={artists.map((a) => ({ id: a.id || "", name: a.name || "" }))}
+        />
+      )}
+
+      {activeTab === "banners" && (
+        <BannerManager
+          initialBanners={banners}
+          onDataChange={reloadData}
         />
       )}
 

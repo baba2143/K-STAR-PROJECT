@@ -3,6 +3,7 @@
  * Static JSON data fetching utilities
  */
 
+import { supabase } from './supabase';
 import type {
   ChartType,
   ArtistsIndex,
@@ -418,5 +419,57 @@ export async function getAvailableArtistPeriods(category: KStarArtistCategory): 
     return index.availablePeriods || [];
   } catch {
     return [];
+  }
+}
+
+// ============================================
+// Chart Banner API
+// ============================================
+
+export interface ChartBanner {
+  id: string;
+  chartType: string;
+  imageUrl: string;
+  linkUrl?: string;
+  altText?: string;
+  isActive: boolean;
+  startDate?: string;
+  endDate?: string;
+}
+
+/**
+ * Load active banner for a specific chart type
+ */
+export async function loadChartBanner(chartType: string): Promise<ChartBanner | null> {
+  try {
+    const { data, error } = await supabase
+      .from('chart_banners')
+      .select('*')
+      .eq('chart_type', chartType)
+      .eq('is_active', true)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows found
+        return null;
+      }
+      console.error('Error loading banner:', error);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      chartType: data.chart_type,
+      imageUrl: data.image_url,
+      linkUrl: data.link_url,
+      altText: data.alt_text,
+      isActive: data.is_active,
+      startDate: data.start_date,
+      endDate: data.end_date,
+    };
+  } catch (error) {
+    console.error('Error loading banner:', error);
+    return null;
   }
 }

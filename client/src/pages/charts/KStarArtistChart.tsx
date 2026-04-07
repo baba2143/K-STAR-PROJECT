@@ -84,7 +84,7 @@ export default function KStarArtistChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection chartName={config.title} />
+      <HeroSection chartType={category} chartName={config.title} />
 
       {/* Chart Content - dark theme matching K-STAR CHART */}
       <div className="bg-[#0f0f0f]">

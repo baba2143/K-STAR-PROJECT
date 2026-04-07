@@ -326,6 +326,41 @@ export interface SongChartHistory {
 }
 
 // ============================================
+// Chart Banner Types
+// ============================================
+
+/**
+ * Chart banner for hero section
+ */
+export interface ChartBanner {
+  id: string;
+  chartType: string;           // e.g., "weekly", "monthly", "season", etc.
+  imageUrl: string;            // バナー画像URL
+  linkUrl?: string;            // クリック時のリンク先URL
+  altText?: string;            // 画像の代替テキスト
+  isActive: boolean;           // 有効/無効
+  startDate?: string;          // 表示開始日 (ISO 8601)
+  endDate?: string;            // 表示終了日 (ISO 8601)
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/** Available chart types for banners */
+export type BannerChartType =
+  | 'weekly'
+  | 'monthly'
+  | 'season'
+  | 'year-end'
+  | 'album'
+  | 'artist'
+  | 'rookie'
+  | 'solo'
+  | 'group'
+  | 'icon'
+  | 'global'
+  | 'global-mv';
+
+// ============================================
 // UI State Types
 // ============================================
 

@@ -63,7 +63,7 @@ export default function AlbumChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection chartName="ALBUM CHART" />
+      <HeroSection chartType="album" chartName="ALBUM CHART" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

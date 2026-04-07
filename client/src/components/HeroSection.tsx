@@ -5,12 +5,64 @@
  * Dark background with neon green outlined text
  */
 
+import { useState, useEffect } from "react";
+import { loadChartBanner, type ChartBanner } from "@/lib/api";
+
 interface HeroSectionProps {
   bannerImage?: string;
+  bannerLink?: string;
   chartName?: string;
+  chartType?: string; // Used to fetch banner from database
 }
 
-export default function HeroSection({ bannerImage, chartName = "K-STAR CHART" }: HeroSectionProps) {
+export default function HeroSection({
+  bannerImage,
+  bannerLink,
+  chartName = "K-STAR CHART",
+  chartType
+}: HeroSectionProps) {
+  const [banner, setBanner] = useState<ChartBanner | null>(null);
+
+  // Fetch banner from database if chartType is provided
+  useEffect(() => {
+    if (chartType) {
+      loadChartBanner(chartType).then(setBanner).catch(console.error);
+    }
+  }, [chartType]);
+
+  // Use database banner if available, otherwise fall back to props
+  const displayImage = banner?.imageUrl || bannerImage;
+  const displayLink = banner?.linkUrl || bannerLink;
+  const displayAlt = banner?.altText || "Banner";
+
+  const renderBannerImage = () => {
+    const imageElement = (
+      <img
+        src={displayImage}
+        alt={displayAlt}
+        className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto rounded-lg shadow-lg"
+        style={{
+          filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.3))",
+        }}
+      />
+    );
+
+    if (displayLink) {
+      return (
+        <a
+          href={displayLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block hover:opacity-90 transition-opacity"
+        >
+          {imageElement}
+        </a>
+      );
+    }
+
+    return imageElement;
+  };
+
   return (
     <div
       className="relative w-full overflow-hidden"
@@ -133,16 +185,9 @@ export default function HeroSection({ bannerImage, chartName = "K-STAR CHART" }:
           </div>
 
           {/* Banner image - centered below text on mobile, right side on desktop */}
-          {bannerImage && (
+          {displayImage && (
             <div className="flex-shrink-0 mt-4 sm:mt-0 flex justify-center sm:justify-end">
-              <img
-                src={bannerImage}
-                alt="Banner"
-                className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto rounded-lg shadow-lg"
-                style={{
-                  filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.3))",
-                }}
-              />
+              {renderBannerImage()}
             </div>
           )}
         </div>

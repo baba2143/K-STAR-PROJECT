@@ -84,7 +84,7 @@ export default function SongChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection bannerImage="/images/chart-banner.png" chartName="WEEKLY CHART" />
+      <HeroSection chartType="weekly" chartName="WEEKLY CHART" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

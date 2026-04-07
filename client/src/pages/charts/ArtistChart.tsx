@@ -63,7 +63,7 @@ export default function ArtistChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection chartName="ARTIST CHART" />
+      <HeroSection chartType="artist" chartName="ARTIST CHART" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

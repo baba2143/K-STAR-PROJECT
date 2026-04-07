@@ -338,6 +338,117 @@ export async function loadLatestChart<T>(chartType: string): Promise<{ week: str
   }
 }
 
+// Banners
+export async function saveBanner(banner: unknown): Promise<boolean> {
+  try {
+    const b = banner as Record<string, unknown>;
+    const record = {
+      id: b.id as string,
+      chart_type: b.chartType as string,
+      image_url: b.imageUrl as string,
+      link_url: b.linkUrl as string | undefined,
+      alt_text: b.altText as string | undefined,
+      is_active: b.isActive as boolean,
+      start_date: b.startDate as string | undefined,
+      end_date: b.endDate as string | undefined,
+    };
+
+    const { error } = await supabase
+      .from('chart_banners')
+      .upsert(record, { onConflict: 'id' });
+
+    if (error) {
+      console.error('Error saving banner:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error saving banner:', error);
+    return false;
+  }
+}
+
+export async function loadBanners<T>(): Promise<T[]> {
+  try {
+    const { data, error } = await supabase
+      .from('chart_banners')
+      .select('*')
+      .order('chart_type');
+
+    if (error) {
+      console.error('Error loading banners:', error);
+      return [];
+    }
+
+    return (data || []).map((record) => ({
+      id: record.id,
+      chartType: record.chart_type,
+      imageUrl: record.image_url,
+      linkUrl: record.link_url,
+      altText: record.alt_text,
+      isActive: record.is_active,
+      startDate: record.start_date,
+      endDate: record.end_date,
+      createdAt: record.created_at,
+      updatedAt: record.updated_at,
+    })) as T[];
+  } catch (error) {
+    console.error('Error loading banners:', error);
+    return [];
+  }
+}
+
+export async function loadBannerByChartType<T>(chartType: string): Promise<T | null> {
+  try {
+    const { data, error } = await supabase
+      .from('chart_banners')
+      .select('*')
+      .eq('chart_type', chartType)
+      .eq('is_active', true)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null;
+      }
+      console.error('Error loading banner:', error);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      chartType: data.chart_type,
+      imageUrl: data.image_url,
+      linkUrl: data.link_url,
+      altText: data.alt_text,
+      isActive: data.is_active,
+      startDate: data.start_date,
+      endDate: data.end_date,
+    } as T;
+  } catch (error) {
+    console.error('Error loading banner:', error);
+    return null;
+  }
+}
+
+export async function deleteBanner(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('chart_banners')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting banner:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error deleting banner:', error);
+    return false;
+  }
+}
+
 // Health check
 export async function checkApiHealth(): Promise<boolean> {
   try {

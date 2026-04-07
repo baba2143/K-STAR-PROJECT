@@ -8,6 +8,7 @@ import {
   Upload,
   Settings,
   FolderTree,
+  Image,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -19,6 +20,7 @@ interface LayoutProps {
 
 const navItems = [
   { id: "charts", label: "チャート編集", icon: BarChart3 },
+  { id: "banners", label: "バナー管理", icon: Image },
   { id: "categories", label: "カテゴリ管理", icon: FolderTree },
   { id: "artists", label: "アーティスト", icon: Users },
   { id: "songs", label: "楽曲", icon: Music },
