@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
-import { GripVertical, Plus, Trash2, ChevronUp, ChevronDown, Download, Search, Music, Check } from "lucide-react";
+import { GripVertical, Plus, Trash2, ChevronUp, ChevronDown, Download, Search, Music, Check, List, FileEdit, Loader2 } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { ChartType, TrendDirection, SongChartEntry } from "@/types";
-import { saveChart, loadChartTypes } from "@/lib/dataApi";
+import { saveChart, loadChartTypes, loadAllCharts, loadChart, deleteChart, type ChartSummary } from "@/lib/dataApi";
 
 // 楽曲データの型
 interface SongData {
@@ -92,6 +92,12 @@ export function ChartEditor({ onExport, songs = [], artists = [] }: ChartEditorP
   ]);
   const [chartTypeOptions, setChartTypeOptions] = useState(defaultChartTypeOptions);
 
+  // Saved charts list
+  const [savedCharts, setSavedCharts] = useState<ChartSummary[]>([]);
+  const [showSavedCharts, setShowSavedCharts] = useState(false);
+  const [loadingCharts, setLoadingCharts] = useState(false);
+  const [loadingChart, setLoadingChart] = useState(false);
+
   // Load chart types from DB
   useEffect(() => {
     async function fetchChartTypes() {
@@ -103,6 +109,50 @@ export function ChartEditor({ onExport, songs = [], artists = [] }: ChartEditorP
     }
     fetchChartTypes();
   }, []);
+
+  // Load saved charts list
+  const refreshSavedCharts = useCallback(async () => {
+    setLoadingCharts(true);
+    const charts = await loadAllCharts();
+    setSavedCharts(charts);
+    setLoadingCharts(false);
+  }, []);
+
+  useEffect(() => {
+    refreshSavedCharts();
+  }, [refreshSavedCharts]);
+
+  // Load a saved chart for editing
+  const handleLoadChart = useCallback(async (ct: string, w: string) => {
+    setLoadingChart(true);
+    const data = await loadChart<{ entries: ChartEditorEntry[] | ArtistChartEditorEntry[] }>(ct, w);
+    if (data) {
+      setChartType(ct as ChartType);
+      setWeek(w);
+
+      const isArtist = isArtistChartType(ct);
+      if (isArtist) {
+        const artistData = (data.entries || []) as ArtistChartEditorEntry[];
+        setArtistEntries(artistData.map((e, idx) => ({ ...e, id: e.id || crypto.randomUUID(), rank: idx + 1 })));
+        setEntries([createEmptyEntry(1)]);
+      } else {
+        const songData = (data.entries || []) as ChartEditorEntry[];
+        setEntries(songData.map((e, idx) => ({ ...e, id: e.id || crypto.randomUUID(), rank: idx + 1 })));
+        setArtistEntries([createEmptyArtistEntry(1)]);
+      }
+    }
+    setLoadingChart(false);
+    setShowSavedCharts(false);
+  }, []);
+
+  // Delete a saved chart
+  const handleDeleteChart = useCallback(async (ct: string, w: string) => {
+    if (!confirm(`チャート「${ct} - ${w}」を削除しますか？`)) return;
+    const success = await deleteChart(ct, w);
+    if (success) {
+      refreshSavedCharts();
+    }
+  }, [refreshSavedCharts]);
 
   const isArtistChart = isArtistChartType(chartType);
   const isMVChart = isMVChartType(chartType);
@@ -400,16 +450,97 @@ export function ChartEditor({ onExport, songs = [], artists = [] }: ChartEditorP
     if (success) {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2000);
+      // Refresh saved charts list
+      refreshSavedCharts();
     }
 
     // 従来のエクスポート処理も実行
     onExport?.({ chartType, week, entries });
 
     setIsSaving(false);
-  }, [chartType, week, entries, artistEntries, isArtistChart, isMVChart, onExport]);
+  }, [chartType, week, entries, artistEntries, isArtistChart, isMVChart, onExport, refreshSavedCharts]);
+
+  // Helper to get chart type label
+  const getChartTypeLabel = (ct: string) => {
+    const option = chartTypeOptions.find((o) => o.value === ct);
+    return option?.label || ct;
+  };
 
   return (
     <div className="space-y-6">
+      {/* Saved Charts Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <List className="w-5 h-5" />
+            保存済みチャート一覧
+          </CardTitle>
+          <Button
+            variant="secondary"
+            onClick={() => setShowSavedCharts(!showSavedCharts)}
+          >
+            {showSavedCharts ? "閉じる" : `表示 (${savedCharts.length}件)`}
+          </Button>
+        </CardHeader>
+        {showSavedCharts && (
+          <CardContent>
+            {loadingCharts ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+              </div>
+            ) : savedCharts.length === 0 ? (
+              <p className="text-gray-500 text-center py-8">
+                保存済みのチャートはありません
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {/* Table Header */}
+                <div className="grid grid-cols-[1fr_120px_100px_180px_100px] gap-2 px-3 py-2 text-xs font-medium text-gray-400 border-b border-border">
+                  <div>チャートタイプ</div>
+                  <div>週</div>
+                  <div>エントリー数</div>
+                  <div>更新日時</div>
+                  <div>操作</div>
+                </div>
+                {/* Chart Rows */}
+                {savedCharts.map((chart) => (
+                  <div
+                    key={`${chart.chartType}-${chart.week}`}
+                    className="grid grid-cols-[1fr_120px_100px_180px_100px] gap-2 px-3 py-3 items-center hover:bg-bg-input/50 rounded-lg transition-colors"
+                  >
+                    <div className="text-white font-medium text-sm">
+                      {getChartTypeLabel(chart.chartType)}
+                    </div>
+                    <div className="text-gray-400 text-sm">{chart.week}</div>
+                    <div className="text-gray-400 text-sm">{chart.entryCount}件</div>
+                    <div className="text-gray-500 text-xs">
+                      {new Date(chart.updatedAt).toLocaleString("ja-JP")}
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleLoadChart(chart.chartType, chart.week)}
+                        disabled={loadingChart}
+                        className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded transition-colors disabled:opacity-50"
+                        title="編集"
+                      >
+                        <FileEdit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteChart(chart.chartType, chart.week)}
+                        className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded transition-colors"
+                        title="削除"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        )}
+      </Card>
+
       {/* Header Controls */}
       <Card>
         <CardHeader>

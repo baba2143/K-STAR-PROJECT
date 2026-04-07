@@ -338,6 +338,60 @@ export async function loadLatestChart<T>(chartType: string): Promise<{ week: str
   }
 }
 
+// Chart summary for list display
+export interface ChartSummary {
+  chartType: string;
+  week: string;
+  entryCount: number;
+  updatedAt: string;
+}
+
+export async function loadAllCharts(): Promise<ChartSummary[]> {
+  try {
+    const { data, error } = await supabase
+      .from('charts')
+      .select('*')
+      .order('updated_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading charts:', error);
+      return [];
+    }
+
+    return (data || []).map((record) => {
+      const entries = record.entries as { entries?: unknown[] };
+      return {
+        chartType: record.chart_type,
+        week: record.week,
+        entryCount: entries?.entries?.length || 0,
+        updatedAt: record.updated_at,
+      };
+    });
+  } catch (error) {
+    console.error('Error loading charts:', error);
+    return [];
+  }
+}
+
+export async function deleteChart(chartType: string, week: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('charts')
+      .delete()
+      .eq('chart_type', chartType)
+      .eq('week', week);
+
+    if (error) {
+      console.error('Error deleting chart:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error deleting chart:', error);
+    return false;
+  }
+}
+
 // Banners
 export async function saveBanner(banner: unknown): Promise<boolean> {
   try {
