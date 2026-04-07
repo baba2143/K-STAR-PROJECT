@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
 import HeroSection from "@/components/HeroSection";
 import ChartEntry from "@/components/ChartEntry";
-import { ChartListSkeleton } from "@/components/ui/skeleton";
+import ChartGridEntry from "@/components/ChartGridEntry";
+import { ChartListSkeleton, ChartGridSkeleton } from "@/components/ui/skeleton";
 import { useYearEndChart, useAvailableYears } from "@/hooks/useChartData";
 import type { ChartEntry as LegacyChartEntry } from "@/lib/chartData";
 import type { SongChartEntry } from "@/lib/types";
@@ -31,10 +32,13 @@ function convertToLegacyEntry(entry: SongChartEntry): LegacyChartEntry & { songI
   };
 }
 
+type ViewMode = "list" | "grid";
+
 export default function YearEndChart() {
   const params = useParams<{ year?: string }>();
   const [, setLocation] = useLocation();
   const [showAll, setShowAll] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   // Load available years
   const { data: years, loading: yearsLoading } = useAvailableYears();
@@ -146,14 +150,23 @@ export default function YearEndChart() {
             {/* View Controls */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => toast("Grid view — Coming soon")}
-                className="w-9 h-9 flex items-center justify-center bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white transition-colors"
+                onClick={() => setViewMode("grid")}
+                className={`w-9 h-9 flex items-center justify-center transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-[#a855f7] text-black"
+                    : "bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white"
+                }`}
                 title="Grid view"
               >
                 <Grid3X3 size={15} />
               </button>
               <button
-                className="w-9 h-9 flex items-center justify-center bg-[#a855f7] text-black"
+                onClick={() => setViewMode("list")}
+                className={`w-9 h-9 flex items-center justify-center transition-colors ${
+                  viewMode === "list"
+                    ? "bg-[#a855f7] text-black"
+                    : "bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white"
+                }`}
                 title="List view"
               >
                 <List size={15} />
@@ -169,48 +182,68 @@ export default function YearEndChart() {
           </div>
         </div>
 
-        {/* Column Headers */}
-        <div className="hidden sm:flex items-center px-3 sm:px-5 py-2 bg-[#0a0a0a] border-b border-[#1a1a1a]">
-          <div className="w-12 flex-shrink-0 mr-2" />
-          <div className="w-5 flex-shrink-0 mr-2" />
-          <div className="w-11 flex-shrink-0 mr-3" />
-          <div
-            className="flex-1 text-[10px] text-gray-500 uppercase tracking-widest font-bold"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Title / Artist
+        {/* Column Headers - Only show in list view */}
+        {viewMode === "list" && (
+          <div className="hidden sm:flex items-center px-3 sm:px-5 py-2 bg-[#0a0a0a] border-b border-[#1a1a1a]">
+            <div className="w-12 flex-shrink-0 mr-2" />
+            <div className="w-5 flex-shrink-0 mr-2" />
+            <div className="w-11 flex-shrink-0 mr-3" />
+            <div
+              className="flex-1 text-[10px] text-gray-500 uppercase tracking-widest font-bold"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Title / Artist
+            </div>
+            <div className="hidden sm:flex items-center gap-5 flex-shrink-0 mr-3">
+              {["LY", "PEAK", "WEEKS"].map((col) => (
+                <div
+                  key={col}
+                  className="text-[10px] text-gray-500 uppercase tracking-widest font-bold text-center"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    width: col === "WEEKS" ? "3rem" : "2.5rem",
+                  }}
+                >
+                  {col}
+                </div>
+              ))}
+            </div>
+            <div className="w-16 flex-shrink-0" />
           </div>
-          <div className="hidden sm:flex items-center gap-5 flex-shrink-0 mr-3">
-            {["LY", "PEAK", "WEEKS"].map((col) => (
-              <div
-                key={col}
-                className="text-[10px] text-gray-500 uppercase tracking-widest font-bold text-center"
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  width: col === "WEEKS" ? "3rem" : "2.5rem",
-                }}
-              >
-                {col}
-              </div>
-            ))}
-          </div>
-          <div className="w-16 flex-shrink-0" />
-        </div>
+        )}
 
         {/* Chart Entries */}
         <div>
           {chartLoading || yearsLoading ? (
-            <ChartListSkeleton count={showAll ? 25 : 10} />
+            viewMode === "grid" ? (
+              <ChartGridSkeleton count={showAll ? 25 : 12} />
+            ) : (
+              <ChartListSkeleton count={showAll ? 25 : 10} />
+            )
           ) : displayedEntries.length > 0 ? (
-            <div className="stagger-animate">
-              {displayedEntries.map((entry) => (
-                <ChartEntry
-                  key={entry.rank}
-                  entry={convertToLegacyEntry(entry)}
-                  isTop10={entry.rank <= 10}
-                />
-              ))}
-            </div>
+            viewMode === "grid" ? (
+              /* Grid View */
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-4">
+                {displayedEntries.map((entry) => (
+                  <ChartGridEntry
+                    key={entry.rank}
+                    entry={convertToLegacyEntry(entry)}
+                    isTop3={entry.rank <= 3}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* List View */
+              <div className="stagger-animate">
+                {displayedEntries.map((entry) => (
+                  <ChartEntry
+                    key={entry.rank}
+                    entry={convertToLegacyEntry(entry)}
+                    isTop10={entry.rank <= 10}
+                  />
+                ))}
+              </div>
+            )
           ) : (
             <div className="px-6 py-12 text-center">
               <p

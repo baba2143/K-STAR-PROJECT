@@ -4,20 +4,23 @@
 
 import { useState, useCallback } from "react";
 import { useParams, Link, useLocation } from "wouter";
-import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
 import HeroSection from "@/components/HeroSection";
 import WeekSelector from "@/components/charts/WeekSelector";
-import { ChartListSkeleton } from "@/components/ui/skeleton";
+import { ChartListSkeleton, ChartGridSkeleton } from "@/components/ui/skeleton";
 import { useArtistsChart, useAvailableWeeks } from "@/hooks/useChartData";
 import type { ArtistChartEntry } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+type ViewMode = "list" | "grid";
 
 export default function ArtistChart() {
   const params = useParams<{ date?: string }>();
   const [, setLocation] = useLocation();
   const [showAll, setShowAll] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   // Load available weeks
   const { data: weeks, loading: weeksLoading } = useAvailableWeeks("artists");
@@ -105,12 +108,23 @@ export default function ArtistChart() {
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => toast("Grid view — Coming soon")}
-                className="w-9 h-9 flex items-center justify-center bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white transition-colors"
+                onClick={() => setViewMode("grid")}
+                className={`w-9 h-9 flex items-center justify-center transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-[#a855f7] text-black"
+                    : "bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white"
+                }`}
               >
                 <Grid3X3 size={15} />
               </button>
-              <button className="w-9 h-9 flex items-center justify-center bg-[#a855f7] text-black">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`w-9 h-9 flex items-center justify-center transition-colors ${
+                  viewMode === "list"
+                    ? "bg-[#a855f7] text-black"
+                    : "bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white"
+                }`}
+              >
                 <List size={15} />
               </button>
               <button
@@ -123,43 +137,59 @@ export default function ArtistChart() {
           </div>
         </div>
 
-        {/* Column Headers */}
-        <div className="hidden sm:flex items-center px-3 sm:px-5 py-2 bg-[#0a0a0a] border-b border-[#1a1a1a]">
-          <div className="w-12 flex-shrink-0 mr-2" />
-          <div className="w-5 flex-shrink-0 mr-2" />
-          <div className="w-14 flex-shrink-0 mr-3" />
-          <div
-            className="flex-1 text-[10px] text-gray-500 uppercase tracking-widest font-bold"
-            style={{ fontFamily: "'DM Sans', sans-serif" }}
-          >
-            Artist
+        {/* Column Headers - Only show in list view */}
+        {viewMode === "list" && (
+          <div className="hidden sm:flex items-center px-3 sm:px-5 py-2 bg-[#0a0a0a] border-b border-[#1a1a1a]">
+            <div className="w-12 flex-shrink-0 mr-2" />
+            <div className="w-5 flex-shrink-0 mr-2" />
+            <div className="w-14 flex-shrink-0 mr-3" />
+            <div
+              className="flex-1 text-[10px] text-gray-500 uppercase tracking-widest font-bold"
+              style={{ fontFamily: "'DM Sans', sans-serif" }}
+            >
+              Artist
+            </div>
+            <div className="hidden sm:flex items-center gap-5 flex-shrink-0 mr-3">
+              {["LW", "PEAK", "WEEKS", "TOP SONG"].map((col) => (
+                <div
+                  key={col}
+                  className="text-[10px] text-gray-500 uppercase tracking-widest font-bold text-center"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    width: col === "TOP SONG" ? "8rem" : "2.5rem",
+                  }}
+                >
+                  {col}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="hidden sm:flex items-center gap-5 flex-shrink-0 mr-3">
-            {["LW", "PEAK", "WEEKS", "TOP SONG"].map((col) => (
-              <div
-                key={col}
-                className="text-[10px] text-gray-500 uppercase tracking-widest font-bold text-center"
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  width: col === "TOP SONG" ? "8rem" : "2.5rem",
-                }}
-              >
-                {col}
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
 
         {/* Chart Entries */}
         <div>
           {chartLoading || weeksLoading ? (
-            <ChartListSkeleton count={showAll ? 25 : 10} />
+            viewMode === "grid" ? (
+              <ChartGridSkeleton count={showAll ? 25 : 12} />
+            ) : (
+              <ChartListSkeleton count={showAll ? 25 : 10} />
+            )
           ) : displayedEntries.length > 0 ? (
-            <div className="stagger-animate">
-              {displayedEntries.map((entry) => (
-                <ArtistChartRow key={entry.rank} entry={entry} isTop10={entry.rank <= 10} />
-              ))}
-            </div>
+            viewMode === "grid" ? (
+              /* Grid View */
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-4">
+                {displayedEntries.map((entry) => (
+                  <ArtistGridCard key={entry.rank} entry={entry} isTop3={entry.rank <= 3} />
+                ))}
+              </div>
+            ) : (
+              /* List View */
+              <div className="stagger-animate">
+                {displayedEntries.map((entry) => (
+                  <ArtistChartRow key={entry.rank} entry={entry} isTop10={entry.rank <= 10} />
+                ))}
+              </div>
+            )
           ) : (
             <div className="px-6 py-12 text-center">
               <p className="text-gray-500 text-sm" style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -288,6 +318,98 @@ function getTrendIcon(trend: string): string {
     case "re-entry": return "↩";
     default: return "";
   }
+}
+
+// Artist Grid Card Component
+interface ArtistGridCardProps {
+  entry: ArtistChartEntry;
+  isTop3?: boolean;
+}
+
+function ArtistGridCard({ entry, isTop3 = false }: ArtistGridCardProps) {
+  const TrendIcon = () => {
+    if (entry.trend === "new") {
+      return <Sparkles size={12} className="text-pink-400" />;
+    }
+    switch (entry.trend) {
+      case "up":
+        return <TrendingUp size={12} className="text-green-400" />;
+      case "down":
+        return <TrendingDown size={12} className="text-red-400" />;
+      default:
+        return <Minus size={12} className="text-gray-500" />;
+    }
+  };
+
+  return (
+    <Link href={`/artists/${entry.artistId}`} className="block">
+      <div
+        className={`group relative bg-[#1a1a1a] rounded-lg overflow-hidden hover:bg-[#222] transition-all duration-200 hover:scale-[1.02] hover:shadow-xl ${
+          isTop3 ? "ring-1 ring-[#ec4899]/30" : ""
+        }`}
+      >
+        {/* Artist Image */}
+        <div className="relative aspect-square">
+          {entry.image ? (
+            <img
+              src={entry.image}
+              alt={entry.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#252525] to-[#1a1a1a] flex items-center justify-center">
+              <span className="text-4xl text-gray-600">
+                {entry.name?.[0] || "?"}
+              </span>
+            </div>
+          )}
+
+          {/* Rank Badge */}
+          <div
+            className={`absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm ${
+              entry.rank === 1
+                ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-black"
+                : entry.rank === 2
+                ? "bg-gradient-to-br from-gray-300 to-gray-400 text-black"
+                : entry.rank === 3
+                ? "bg-gradient-to-br from-orange-400 to-orange-600 text-black"
+                : "bg-black/70 text-white"
+            }`}
+            style={{ fontFamily: "'Bebas Neue', cursive" }}
+          >
+            {entry.rank}
+          </div>
+
+          {/* Trend Badge */}
+          <div className="absolute top-2 right-2 bg-black/70 rounded px-1.5 py-0.5 flex items-center gap-1">
+            <TrendIcon />
+            {entry.trend === "new" && (
+              <span className="text-[10px] text-pink-400 font-bold">NEW</span>
+            )}
+          </div>
+
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        </div>
+
+        {/* Info */}
+        <div className="p-3">
+          <h3
+            className="text-white text-sm font-medium truncate"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {entry.name}
+          </h3>
+          <p
+            className="text-gray-400 text-xs truncate mt-0.5"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {entry.nameKo || entry.topSongTitle || ""}
+          </p>
+        </div>
+      </div>
+    </Link>
+  );
 }
 
 function formatWeekLabel(start: string, end: string): string {

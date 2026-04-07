@@ -4,15 +4,17 @@
  */
 
 import { useState, useCallback } from "react";
-import { useParams, useLocation } from "wouter";
-import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { useParams, useLocation, Link } from "wouter";
+import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Minus, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
 import HeroSection from "@/components/HeroSection";
 import ArtistChartEntry from "@/components/charts/ArtistChartEntry";
-import { ChartListSkeleton } from "@/components/ui/skeleton";
+import { ChartListSkeleton, ChartGridSkeleton } from "@/components/ui/skeleton";
 import { useKStarArtistChart, useAvailableArtistPeriods } from "@/hooks/useChartData";
 import type { KStarArtistCategory } from "@/lib/api";
+
+type ViewMode = "list" | "grid";
 
 // Chart category configurations
 const categoryConfig: Record<string, {
@@ -48,6 +50,7 @@ export default function KStarArtistChart() {
   const params = useParams<{ category?: string; period?: string }>();
   const [, setLocation] = useLocation();
   const [showAll, setShowAll] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
 
   const category = (params.category || "rookie") as KStarArtistCategory;
   const config = categoryConfig[category] || categoryConfig.rookie;
@@ -136,13 +139,22 @@ export default function KStarArtistChart() {
             {/* View Controls */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => toast("Grid view — Coming soon")}
-                className="w-9 h-9 flex items-center justify-center bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white transition-colors"
+                onClick={() => setViewMode("grid")}
+                className={`w-9 h-9 flex items-center justify-center transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-[#a855f7] text-black"
+                    : "bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white"
+                }`}
               >
                 <Grid3X3 size={15} />
               </button>
               <button
-                className="w-9 h-9 flex items-center justify-center bg-[#a855f7] text-black"
+                onClick={() => setViewMode("list")}
+                className={`w-9 h-9 flex items-center justify-center transition-colors ${
+                  viewMode === "list"
+                    ? "bg-[#a855f7] text-black"
+                    : "bg-[#1a1a1a] hover:bg-[#222] text-gray-400 hover:text-white"
+                }`}
               >
                 <List size={15} />
               </button>
@@ -159,16 +171,35 @@ export default function KStarArtistChart() {
         {/* Chart Entries */}
         <div>
           {chartLoading || periodsLoading ? (
-            <ChartListSkeleton count={10} />
+            viewMode === "grid" ? (
+              <ChartGridSkeleton count={12} />
+            ) : (
+              <ChartListSkeleton count={10} />
+            )
           ) : displayedEntries.length > 0 ? (
-            displayedEntries.map((entry, index) => (
-              <ArtistChartEntry
-                key={entry.rank}
-                entry={entry}
-                isTop1={index === 0}
-                accentColor={ACCENT_COLOR}
-              />
-            ))
+            viewMode === "grid" ? (
+              /* Grid View */
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 p-4">
+                {displayedEntries.map((entry) => (
+                  <KStarArtistGridCard
+                    key={entry.rank}
+                    entry={entry}
+                    isTop3={entry.rank <= 3}
+                    accentColor={ACCENT_COLOR}
+                  />
+                ))}
+              </div>
+            ) : (
+              /* List View */
+              displayedEntries.map((entry, index) => (
+                <ArtistChartEntry
+                  key={entry.rank}
+                  entry={entry}
+                  isTop1={index === 0}
+                  accentColor={ACCENT_COLOR}
+                />
+              ))
+            )
           ) : (
             <div className="px-6 py-12 text-center">
               <p
@@ -247,4 +278,107 @@ function formatPeriodLabel(period: string): string {
   } catch {
     return period;
   }
+}
+
+// K-STAR Artist Grid Card Component
+interface KStarArtistGridCardProps {
+  entry: {
+    rank: number;
+    name: string;
+    nameKo?: string;
+    artistId: string;
+    image?: string;
+    trend: "up" | "down" | "same" | "new" | "re-entry";
+  };
+  isTop3?: boolean;
+  accentColor?: string;
+}
+
+function KStarArtistGridCard({ entry, isTop3 = false, accentColor = "#a855f7" }: KStarArtistGridCardProps) {
+  const TrendIcon = () => {
+    if (entry.trend === "new" || entry.trend === "re-entry") {
+      return <Sparkles size={12} className="text-pink-400" />;
+    }
+    switch (entry.trend) {
+      case "up":
+        return <TrendingUp size={12} className="text-green-400" />;
+      case "down":
+        return <TrendingDown size={12} className="text-red-400" />;
+      default:
+        return <Minus size={12} className="text-gray-500" />;
+    }
+  };
+
+  return (
+    <Link href={`/artists/${entry.artistId}`} className="block">
+      <div
+        className={`group relative bg-[#1a1a1a] rounded-lg overflow-hidden hover:bg-[#222] transition-all duration-200 hover:scale-[1.02] hover:shadow-xl ${
+          isTop3 ? "ring-1 ring-[#a855f7]/30" : ""
+        }`}
+      >
+        {/* Artist Image */}
+        <div className="relative aspect-square">
+          {entry.image ? (
+            <img
+              src={entry.image}
+              alt={entry.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-[#252525] to-[#1a1a1a] flex items-center justify-center">
+              <span className="text-4xl text-gray-600">
+                {entry.name?.[0] || "?"}
+              </span>
+            </div>
+          )}
+
+          {/* Rank Badge */}
+          <div
+            className={`absolute top-2 left-2 w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm ${
+              entry.rank === 1
+                ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-black"
+                : entry.rank === 2
+                ? "bg-gradient-to-br from-gray-300 to-gray-400 text-black"
+                : entry.rank === 3
+                ? "bg-gradient-to-br from-orange-400 to-orange-600 text-black"
+                : "bg-black/70 text-white"
+            }`}
+            style={{ fontFamily: "'Bebas Neue', cursive" }}
+          >
+            {entry.rank}
+          </div>
+
+          {/* Trend Badge */}
+          <div className="absolute top-2 right-2 bg-black/70 rounded px-1.5 py-0.5 flex items-center gap-1">
+            <TrendIcon />
+            {entry.trend === "new" && (
+              <span className="text-[10px] text-pink-400 font-bold">NEW</span>
+            )}
+            {entry.trend === "re-entry" && (
+              <span className="text-[10px] font-bold" style={{ color: accentColor }}>RE</span>
+            )}
+          </div>
+
+          {/* Hover Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        </div>
+
+        {/* Info */}
+        <div className="p-3">
+          <h3
+            className="text-white text-sm font-medium truncate"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {entry.name}
+          </h3>
+          <p
+            className="text-gray-400 text-xs truncate mt-0.5"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+          >
+            {entry.nameKo || ""}
+          </p>
+        </div>
+      </div>
+    </Link>
+  );
 }

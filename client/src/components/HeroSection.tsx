@@ -145,34 +145,6 @@ export default function HeroSection({
               TOP 100
             </div>
 
-            {/* Week info row */}
-            <div className="flex items-center gap-3 mt-3 flex-wrap">
-              <div
-                className="text-black font-black px-3 py-1 text-sm tracking-widest uppercase"
-                style={{
-                  fontFamily: "'Bebas Neue', cursive",
-                  fontSize: "0.95rem",
-                  letterSpacing: "0.15em",
-                  background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
-                }}
-              >
-                K-POP
-              </div>
-              <div
-                className="text-xs font-bold tracking-widest uppercase"
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  letterSpacing: "0.12em",
-                  background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                週間チャート
-              </div>
-            </div>
-
             {/* Tagline */}
             <div className="mt-3">
               <p
@@ -185,11 +157,20 @@ export default function HeroSection({
           </div>
 
           {/* Banner image - centered below text on mobile, right side on desktop */}
-          {displayImage && (
-            <div className="flex-shrink-0 mt-4 sm:mt-0 flex justify-center sm:justify-end">
-              {renderBannerImage()}
-            </div>
-          )}
+          <div className="flex-shrink-0 mt-4 sm:mt-0 flex justify-center sm:justify-end">
+            {displayImage ? (
+              renderBannerImage()
+            ) : (
+              /* Placeholder when no banner image */
+              <div
+                className="h-24 sm:h-32 md:h-40 lg:h-48 w-40 sm:w-48 md:w-56 lg:w-64 rounded-lg"
+                style={{
+                  background: "linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)",
+                  border: "1px dashed rgba(168, 85, 247, 0.3)",
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
