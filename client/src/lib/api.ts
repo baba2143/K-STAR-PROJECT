@@ -499,3 +499,83 @@ export async function loadChartBanner(chartType: string): Promise<ChartBanner | 
     return null;
   }
 }
+
+// ============================================
+// Sidebar Categories API
+// ============================================
+
+export interface SidebarCategory {
+  id: string;
+  label: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface SidebarChartItem {
+  id: string;
+  categoryId: string;
+  label: string;
+  path: string;
+  chartType: string;
+  sortOrder: number;
+  isActive: boolean;
+  comingSoon: boolean;
+}
+
+export interface SidebarCategoryWithItems extends SidebarCategory {
+  items: SidebarChartItem[];
+}
+
+/**
+ * Load sidebar categories with their chart items from Supabase
+ */
+export async function loadSidebarCategories(): Promise<SidebarCategoryWithItems[]> {
+  try {
+    // Load categories
+    const { data: categories, error: catError } = await supabase
+      .from('sidebar_categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order');
+
+    if (catError) {
+      console.error('Error loading sidebar categories:', catError);
+      return [];
+    }
+
+    // Load all items
+    const { data: items, error: itemError } = await supabase
+      .from('sidebar_chart_items')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order');
+
+    if (itemError) {
+      console.error('Error loading sidebar chart items:', itemError);
+      return [];
+    }
+
+    // Combine categories with their items
+    return (categories || []).map((cat) => ({
+      id: cat.id,
+      label: cat.label,
+      sortOrder: cat.sort_order,
+      isActive: cat.is_active,
+      items: (items || [])
+        .filter((item) => item.category_id === cat.id)
+        .map((item) => ({
+          id: item.id,
+          categoryId: item.category_id,
+          label: item.label,
+          path: item.path,
+          chartType: item.chart_type,
+          sortOrder: item.sort_order,
+          isActive: item.is_active,
+          comingSoon: item.coming_soon,
+        })),
+    }));
+  } catch (error) {
+    console.error('Error loading sidebar categories:', error);
+    return [];
+  }
+}

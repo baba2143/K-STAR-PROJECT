@@ -360,6 +360,45 @@ export type BannerChartType =
   | 'hot-now';
 
 // ============================================
+// Sidebar Category Types
+// ============================================
+
+/**
+ * Sidebar category (parent container for chart items)
+ */
+export interface SidebarCategory {
+  id: string;
+  label: string;
+  sortOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/**
+ * Sidebar chart item (individual chart entry under a category)
+ */
+export interface SidebarChartItem {
+  id: string;
+  categoryId: string;
+  label: string;
+  path: string;
+  chartType: string;
+  sortOrder: number;
+  isActive: boolean;
+  comingSoon: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/**
+ * Sidebar category with its chart items (for display)
+ */
+export interface SidebarCategoryWithItems extends SidebarCategory {
+  items: SidebarChartItem[];
+}
+
+// ============================================
 // UI State Types
 // ============================================
 

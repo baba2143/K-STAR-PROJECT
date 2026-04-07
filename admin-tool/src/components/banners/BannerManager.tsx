@@ -2,9 +2,10 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { Plus, Search, Edit2, Trash2, Save, X, Image, ExternalLink, Upload, Loader2 } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { ChartBanner, BannerChartType } from "@/types";
-import { saveBanner, deleteBanner, uploadBannerImage } from "@/lib/dataApi";
+import { saveBanner, deleteBanner, uploadBannerImage, loadChartTypes } from "@/lib/dataApi";
 
-const chartTypeOptions: { value: BannerChartType; label: string }[] = [
+// Fallback chart types (used when DB is empty or unavailable)
+const fallbackChartTypeOptions: { value: BannerChartType; label: string }[] = [
   { value: "weekly", label: "WEEKLY CHART" },
   { value: "monthly", label: "MONTHLY CHART" },
   { value: "season", label: "SEASON CHART" },
@@ -25,10 +26,22 @@ interface BannerManagerProps {
 
 export function BannerManager({ initialBanners = [], onDataChange }: BannerManagerProps) {
   const [banners, setBanners] = useState<Partial<ChartBanner>[]>(initialBanners);
+  const [chartTypeOptions, setChartTypeOptions] = useState<{ value: string; label: string }[]>(fallbackChartTypeOptions);
 
   useEffect(() => {
     setBanners(initialBanners);
   }, [initialBanners]);
+
+  // Load chart types from database
+  useEffect(() => {
+    const fetchChartTypes = async () => {
+      const types = await loadChartTypes();
+      if (types.length > 0) {
+        setChartTypeOptions(types);
+      }
+    };
+    fetchChartTypes();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);

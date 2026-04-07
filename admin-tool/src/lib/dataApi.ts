@@ -512,3 +512,251 @@ export async function checkApiHealth(): Promise<boolean> {
     return false;
   }
 }
+
+// ============================================
+// Sidebar Categories
+// ============================================
+
+export async function loadSidebarCategories<T>(): Promise<T[]> {
+  try {
+    const { data, error } = await supabase
+      .from('sidebar_categories')
+      .select('*')
+      .order('sort_order');
+
+    if (error) {
+      console.error('Error loading sidebar categories:', error);
+      return [];
+    }
+
+    return (data || []).map((record) => ({
+      id: record.id,
+      label: record.label,
+      sortOrder: record.sort_order,
+      isActive: record.is_active,
+      createdAt: record.created_at,
+      updatedAt: record.updated_at,
+    })) as T[];
+  } catch (error) {
+    console.error('Error loading sidebar categories:', error);
+    return [];
+  }
+}
+
+export async function saveSidebarCategory(category: unknown): Promise<boolean> {
+  try {
+    const c = category as Record<string, unknown>;
+    const record = {
+      id: c.id as string,
+      label: c.label as string,
+      sort_order: c.sortOrder as number,
+      is_active: c.isActive as boolean,
+    };
+
+    const { error } = await supabase
+      .from('sidebar_categories')
+      .upsert(record, { onConflict: 'id' });
+
+    if (error) {
+      console.error('Error saving sidebar category:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error saving sidebar category:', error);
+    return false;
+  }
+}
+
+export async function deleteSidebarCategory(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('sidebar_categories')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting sidebar category:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error deleting sidebar category:', error);
+    return false;
+  }
+}
+
+// ============================================
+// Sidebar Chart Items
+// ============================================
+
+export async function loadSidebarChartItems<T>(categoryId?: string): Promise<T[]> {
+  try {
+    let query = supabase
+      .from('sidebar_chart_items')
+      .select('*')
+      .order('sort_order');
+
+    if (categoryId) {
+      query = query.eq('category_id', categoryId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error loading sidebar chart items:', error);
+      return [];
+    }
+
+    return (data || []).map((record) => ({
+      id: record.id,
+      categoryId: record.category_id,
+      label: record.label,
+      path: record.path,
+      chartType: record.chart_type,
+      sortOrder: record.sort_order,
+      isActive: record.is_active,
+      comingSoon: record.coming_soon,
+      createdAt: record.created_at,
+      updatedAt: record.updated_at,
+    })) as T[];
+  } catch (error) {
+    console.error('Error loading sidebar chart items:', error);
+    return [];
+  }
+}
+
+export async function saveSidebarChartItem(item: unknown): Promise<boolean> {
+  try {
+    const i = item as Record<string, unknown>;
+    const record = {
+      id: i.id as string,
+      category_id: i.categoryId as string,
+      label: i.label as string,
+      path: i.path as string,
+      chart_type: i.chartType as string,
+      sort_order: i.sortOrder as number,
+      is_active: i.isActive as boolean,
+      coming_soon: i.comingSoon as boolean,
+    };
+
+    const { error } = await supabase
+      .from('sidebar_chart_items')
+      .upsert(record, { onConflict: 'id' });
+
+    if (error) {
+      console.error('Error saving sidebar chart item:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error saving sidebar chart item:', error);
+    return false;
+  }
+}
+
+export async function deleteSidebarChartItem(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('sidebar_chart_items')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting sidebar chart item:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error deleting sidebar chart item:', error);
+    return false;
+  }
+}
+
+// ============================================
+// Combined Sidebar Data (Categories with Items)
+// ============================================
+
+export async function loadSidebarCategoriesWithItems<T>(): Promise<T[]> {
+  try {
+    // Load categories
+    const { data: categories, error: catError } = await supabase
+      .from('sidebar_categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_order');
+
+    if (catError) {
+      console.error('Error loading sidebar categories:', catError);
+      return [];
+    }
+
+    // Load all items
+    const { data: items, error: itemError } = await supabase
+      .from('sidebar_chart_items')
+      .select('*')
+      .order('sort_order');
+
+    if (itemError) {
+      console.error('Error loading sidebar chart items:', itemError);
+      return [];
+    }
+
+    // Combine categories with their items
+    return (categories || []).map((cat) => ({
+      id: cat.id,
+      label: cat.label,
+      sortOrder: cat.sort_order,
+      isActive: cat.is_active,
+      items: (items || [])
+        .filter((item) => item.category_id === cat.id)
+        .map((item) => ({
+          id: item.id,
+          categoryId: item.category_id,
+          label: item.label,
+          path: item.path,
+          chartType: item.chart_type,
+          sortOrder: item.sort_order,
+          isActive: item.is_active,
+          comingSoon: item.coming_soon,
+        })),
+    })) as T[];
+  } catch (error) {
+    console.error('Error loading sidebar categories with items:', error);
+    return [];
+  }
+}
+
+// ============================================
+// Get All Chart Types (for Banner Manager)
+// ============================================
+
+export async function loadChartTypes(): Promise<{ value: string; label: string }[]> {
+  try {
+    const { data, error } = await supabase
+      .from('sidebar_chart_items')
+      .select('chart_type, label')
+      .order('label');
+
+    if (error) {
+      console.error('Error loading chart types:', error);
+      return [];
+    }
+
+    // Remove duplicates and format for select options
+    const uniqueTypes = new Map<string, string>();
+    (data || []).forEach((item) => {
+      if (!uniqueTypes.has(item.chart_type)) {
+        uniqueTypes.set(item.chart_type, item.label);
+      }
+    });
+
+    return Array.from(uniqueTypes.entries()).map(([value, label]) => ({
+      value,
+      label,
+    }));
+  } catch (error) {
+    console.error('Error loading chart types:', error);
+    return [];
+  }
+}

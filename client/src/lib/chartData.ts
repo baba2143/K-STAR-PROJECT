@@ -87,21 +87,21 @@ export const sidebarCategories = [
 ];
 
 export const kstarCharts = [
-  { label: "WEEKLY CHART", path: "/charts/weekly", active: true },
-  { label: "MONTHLY CHART", path: "/charts/monthly", active: false },
-  { label: "SEASON CHART", path: "/charts/season", active: false },
-  { label: "YEAR-END CHART", path: "/charts/year-end", active: false },
+  { label: "WEEKLY CHART", path: "/charts/weekly", active: true, comingSoon: false },
+  { label: "MONTHLY CHART", path: "/charts/monthly", active: false, comingSoon: true },
+  { label: "SEASON CHART", path: "/charts/season", active: false, comingSoon: true },
+  { label: "YEAR-END CHART", path: "/charts/year-end", active: false, comingSoon: true },
 ];
 
 export const kstarArtistCharts = [
-  { label: "BEST ROOKIE", path: "/charts/artist/rookie", active: false },
-  { label: "BEST SOLO&FEATURING", path: "/charts/artist/solo", active: false },
-  { label: "BEST GROUP", path: "/charts/artist/group", active: false },
-  { label: "BEST ICON", path: "/charts/artist/icon", active: false },
-  { label: "BEST GLOBAL", path: "/charts/artist/global", active: false },
+  { label: "BEST ROOKIE", path: "/charts/artist/rookie", active: false, comingSoon: true },
+  { label: "BEST SOLO&FEATURING", path: "/charts/artist/solo", active: false, comingSoon: true },
+  { label: "BEST GROUP", path: "/charts/artist/group", active: false, comingSoon: true },
+  { label: "BEST ICON", path: "/charts/artist/icon", active: false, comingSoon: true },
+  { label: "BEST GLOBAL", path: "/charts/artist/global", active: false, comingSoon: true },
 ];
 
 export const globalChampCharts = [
-  { label: "GLOBAL MUSIC VIDEO CHART", path: "/charts/global/global-mv", active: false },
-  { label: "HOT NOW MUSIC VIDEO CHART", path: "/charts/global/global-hot-mv", active: false },
+  { label: "GLOBAL MUSIC VIDEO CHART", path: "/charts/global/global-mv", active: false, comingSoon: true },
+  { label: "HOT NOW MUSIC VIDEO CHART", path: "/charts/global/global-hot-mv", active: false, comingSoon: true },
 ];
