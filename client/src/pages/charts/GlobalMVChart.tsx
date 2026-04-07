@@ -3,12 +3,13 @@
  * YouTube embedded video chart with hover-to-expand UX
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, X, Play, TrendingUp, Eye, Calendar } from "lucide-react";
 import ChartLayout from "@/components/charts/ChartLayout";
 import HeroSection from "@/components/HeroSection";
 import { ChartListSkeleton } from "@/components/ui/skeleton";
+import { loadMVChart, getAvailableMVWeeks, type MVChartEntry as APIMVChartEntry } from "@/lib/api";
 
 // Chart type configurations
 const chartTypeConfig: Record<string, {
@@ -28,7 +29,7 @@ const chartTypeConfig: Record<string, {
   }
 };
 
-// MV Chart Entry interface
+// MV Chart Entry interface (local, extends API type)
 interface MVChartEntry {
   rank: number;
   previousRank: number | null;
@@ -40,74 +41,8 @@ interface MVChartEntry {
   weeklyViews: number;
   totalViews: number;
   releaseDate: string;
-  trend: "up" | "down" | "same" | "new";
+  trend: "up" | "down" | "same" | "new" | "re-entry";
 }
-
-// Mock data for demo
-const mockMVData: MVChartEntry[] = [
-  {
-    rank: 1,
-    previousRank: null,
-    title: "KILLA (Face the other me)",
-    artist: "Kep1er",
-    artistKo: "케플러",
-    youtubeId: "d2r0hL8RQXA",
-    thumbnail: "https://i.ytimg.com/vi/d2r0hL8RQXA/maxresdefault.jpg",
-    weeklyViews: 739695,
-    totalViews: 3111660,
-    releaseDate: "2026.03.31",
-    trend: "new"
-  },
-  {
-    rank: 2,
-    previousRank: null,
-    title: "Too Bad",
-    artist: "NiziU",
-    artistKo: "니쥬",
-    youtubeId: "example2",
-    thumbnail: "https://i.ytimg.com/vi/example2/maxresdefault.jpg",
-    weeklyViews: 163709,
-    totalViews: 4494328,
-    releaseDate: "2026.04.01",
-    trend: "up"
-  },
-  {
-    rank: 3,
-    previousRank: null,
-    title: "사랑병동",
-    artist: "원필 (DAY6)",
-    youtubeId: "example3",
-    thumbnail: "https://i.ytimg.com/vi/example3/maxresdefault.jpg",
-    weeklyViews: 83764,
-    totalViews: 5522059,
-    releaseDate: "2026.03.30",
-    trend: "up"
-  },
-  {
-    rank: 4,
-    previousRank: null,
-    title: "SWIM",
-    artist: "방탄소년단",
-    youtubeId: "example4",
-    thumbnail: "https://i.ytimg.com/vi/example4/maxresdefault.jpg",
-    weeklyViews: 83227,
-    totalViews: 84010876,
-    releaseDate: "2026.03.25",
-    trend: "same"
-  },
-  {
-    rank: 5,
-    previousRank: null,
-    title: "APT. (ROSÉ & Bruno Mars)",
-    artist: "로제 (ROSÉ)",
-    youtubeId: "ekr2nIex040",
-    thumbnail: "https://i.ytimg.com/vi/ekr2nIex040/maxresdefault.jpg",
-    weeklyViews: 50650,
-    totalViews: 2412702427,
-    releaseDate: "2024.10.18",
-    trend: "down"
-  }
-];
 
 // Format number with commas
 function formatNumber(num: number): string {
@@ -119,26 +54,68 @@ export default function GlobalMVChart() {
   const [, setLocation] = useLocation();
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [showVideoModal, setShowVideoModal] = useState<MVChartEntry | null>(null);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [mvData, setMvData] = useState<MVChartEntry[]>([]);
+  const [periods, setPeriods] = useState<string[]>([]);
 
   const chartType = params.type || "global-mv";
   const config = chartTypeConfig[chartType] || chartTypeConfig["global-mv"];
 
-  // Mock periods
-  const periods = ["2026-04-01", "2026-03-25", "2026-03-18"];
-  const currentPeriod = params.period || periods[0];
+  // Load available periods
+  useEffect(() => {
+    async function fetchPeriods() {
+      const weeks = await getAvailableMVWeeks(chartType);
+      if (weeks.length > 0) {
+        setPeriods(weeks);
+      }
+    }
+    fetchPeriods();
+  }, [chartType]);
+
+  // Load chart data
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const week = params.period || (periods.length > 0 ? periods[0] : undefined);
+      const data = await loadMVChart(chartType, week);
+
+      if (data && data.entries.length > 0) {
+        // Transform API data to local format
+        const entries: MVChartEntry[] = data.entries.map((entry: APIMVChartEntry) => ({
+          rank: entry.rank,
+          previousRank: entry.previousRank,
+          title: entry.title,
+          artist: entry.artist,
+          artistKo: entry.artistKo,
+          youtubeId: entry.youtubeId || "",
+          thumbnail: entry.thumbnail || `https://i.ytimg.com/vi/${entry.youtubeId}/maxresdefault.jpg`,
+          weeklyViews: entry.weeklyViews || 0,
+          totalViews: entry.totalViews || 0,
+          releaseDate: entry.releaseDate || "",
+          trend: entry.trend,
+        }));
+        setMvData(entries);
+      } else {
+        setMvData([]);
+      }
+      setLoading(false);
+    }
+    fetchData();
+  }, [chartType, params.period, periods]);
+
+  const currentPeriod = params.period || (periods.length > 0 ? periods[0] : "");
   const currentIndex = periods.indexOf(currentPeriod);
-  const hasPrevious = currentIndex < periods.length - 1;
+  const hasPrevious = currentIndex >= 0 && currentIndex < periods.length - 1;
   const hasNext = currentIndex > 0;
 
   const goToPrevious = useCallback(() => {
-    if (hasPrevious) {
+    if (hasPrevious && periods.length > 0) {
       setLocation(`/charts/global/${chartType}/${periods[currentIndex + 1]}`);
     }
   }, [hasPrevious, chartType, currentIndex, periods, setLocation]);
 
   const goToNext = useCallback(() => {
-    if (hasNext) {
+    if (hasNext && periods.length > 0) {
       setLocation(`/charts/global/${chartType}/${periods[currentIndex - 1]}`);
     }
   }, [hasNext, chartType, currentIndex, periods, setLocation]);
@@ -262,8 +239,17 @@ export default function GlobalMVChart() {
         <div>
           {loading ? (
             <ChartListSkeleton count={10} />
+          ) : mvData.length === 0 ? (
+            <div className="py-20 text-center">
+              <p className="text-gray-500 text-lg" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                データがありません
+              </p>
+              <p className="text-gray-600 text-sm mt-2">
+                管理ツールからチャートデータを登録してください
+              </p>
+            </div>
           ) : (
-            mockMVData.map((entry) => (
+            mvData.map((entry) => (
               <MVChartEntryRow
                 key={entry.rank}
                 entry={entry}

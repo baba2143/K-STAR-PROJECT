@@ -579,3 +579,92 @@ export async function loadSidebarCategories(): Promise<SidebarCategoryWithItems[
     return [];
   }
 }
+
+// ============================================
+// MV Chart API
+// ============================================
+
+export interface MVChartEntry {
+  rank: number;
+  previousRank: number | null;
+  title: string;
+  artist: string;
+  artistKo?: string;
+  youtubeId: string;
+  thumbnail?: string;
+  weeklyViews: number;
+  totalViews: number;
+  releaseDate?: string;
+  trend: 'up' | 'down' | 'same' | 'new' | 're-entry';
+}
+
+export interface MVChartData {
+  chartType: string;
+  week: string;
+  updatedAt: string;
+  entries: MVChartEntry[];
+}
+
+/**
+ * Load MV chart data for a specific week
+ */
+export async function loadMVChart(chartType: string, week?: string): Promise<MVChartData | null> {
+  try {
+    let query = supabase
+      .from('charts')
+      .select('*')
+      .eq('chart_type', chartType);
+
+    if (week) {
+      query = query.eq('week', week);
+    } else {
+      // Get latest
+      query = query.order('week', { ascending: false }).limit(1);
+    }
+
+    const { data, error } = await query.single();
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows returned
+        return null;
+      }
+      console.error('Error loading MV chart:', error);
+      return null;
+    }
+
+    const entries = data.entries as { entries?: MVChartEntry[] };
+    return {
+      chartType: data.chart_type,
+      week: data.week,
+      updatedAt: data.updated_at,
+      entries: entries?.entries || [],
+    };
+  } catch (error) {
+    console.error('Error loading MV chart:', error);
+    return null;
+  }
+}
+
+/**
+ * Get available weeks for MV chart
+ */
+export async function getAvailableMVWeeks(chartType: string): Promise<string[]> {
+  try {
+    const { data, error } = await supabase
+      .from('charts')
+      .select('week')
+      .eq('chart_type', chartType)
+      .order('week', { ascending: false });
+
+    if (error) {
+      console.error('Error loading MV weeks:', error);
+      return [];
+    }
+
+    return (data || []).map((d) => d.week);
+  } catch (error) {
+    console.error('Error loading MV weeks:', error);
+    return [];
+  }
+}

@@ -9,6 +9,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Search, User, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { loadSidebarCategories, type SidebarCategoryWithItems } from "@/lib/api";
 import { kstarCharts, kstarArtistCharts, globalChampCharts } from "@/lib/chartData";
 
 const navItems = [
@@ -19,8 +20,8 @@ const navItems = [
   { label: "About", path: null },
 ];
 
-// Main chart navigation items with submenus
-const chartNavItems = [
+// Default chart navigation items (fallback)
+const defaultChartNavItems = [
   {
     label: "K-STAR CHART",
     submenu: kstarCharts,
@@ -38,11 +39,43 @@ const chartNavItems = [
   },
 ];
 
+// Helper to get activePath based on category label
+function getActivePath(label: string): string {
+  const pathMap: Record<string, string> = {
+    "K-STAR CHART": "/charts/songs",
+    "K-STAR ARTIST CHART": "/charts/artists",
+    "GLOBAL CHAMP CHART": "/charts/global",
+  };
+  return pathMap[label] || "/charts";
+}
+
 export default function Header() {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [chartNavItems, setChartNavItems] = useState(defaultChartNavItems);
+
+  // Load chart navigation items from DB
+  useEffect(() => {
+    async function fetchCategories() {
+      const categories = await loadSidebarCategories();
+      if (categories.length > 0) {
+        const navItems = categories.map((cat: SidebarCategoryWithItems) => ({
+          label: cat.label,
+          submenu: cat.items.map((item) => ({
+            label: item.label,
+            path: item.path,
+            comingSoon: item.comingSoon,
+          })),
+          activePath: getActivePath(cat.label),
+        }));
+        setChartNavItems(navItems);
+      }
+      // If DB returns empty, keep using defaultChartNavItems
+    }
+    fetchCategories();
+  }, []);
 
   const handlePlaceholderClick = (label: string) => {
     toast(`${label} — Feature coming soon`);

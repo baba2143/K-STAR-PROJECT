@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { GripVertical, Plus, Trash2, ChevronUp, ChevronDown, Download, Search, Music, Check } from "lucide-react";
 import { Button, Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { ChartType, TrendDirection, SongChartEntry } from "@/types";
-import { saveChart } from "@/lib/dataApi";
+import { saveChart, loadChartTypes } from "@/lib/dataApi";
 
 // 楽曲データの型
 interface SongData {
@@ -20,7 +20,8 @@ interface ArtistData {
   name: string;
 }
 
-const chartTypeOptions = [
+// Default chart type options (fallback if DB is empty)
+const defaultChartTypeOptions = [
   // K-STAR CHART
   { value: "weekly", label: "WEEKLY CHART" },
   { value: "monthly", label: "MONTHLY CHART" },
@@ -89,6 +90,19 @@ export function ChartEditor({ onExport, songs = [], artists = [] }: ChartEditorP
   const [artistEntries, setArtistEntries] = useState<ArtistChartEditorEntry[]>([
     createEmptyArtistEntry(1),
   ]);
+  const [chartTypeOptions, setChartTypeOptions] = useState(defaultChartTypeOptions);
+
+  // Load chart types from DB
+  useEffect(() => {
+    async function fetchChartTypes() {
+      const types = await loadChartTypes();
+      if (types.length > 0) {
+        setChartTypeOptions(types);
+      }
+      // If DB returns empty, keep using defaultChartTypeOptions
+    }
+    fetchChartTypes();
+  }, []);
 
   const isArtistChart = isArtistChartType(chartType);
   const isMVChart = isMVChartType(chartType);

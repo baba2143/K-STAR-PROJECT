@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { Plus, Trash2, ChevronUp, ChevronDown, GripVertical, FolderPlus, Save, Loader2 } from "lucide-react";
+import { Plus, Trash2, ChevronUp, ChevronDown, GripVertical, FolderPlus, Loader2 } from "lucide-react";
 import { Button, Input, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { SidebarCategory, SidebarChartItem, SidebarCategoryWithItems } from "@/types";
 import {
