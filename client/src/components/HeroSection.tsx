@@ -5,7 +5,11 @@
  * Dark background with neon green outlined text
  */
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  bannerImage?: string;
+}
+
+export default function HeroSection({ bannerImage }: HeroSectionProps) {
   return (
     <div
       className="relative w-full overflow-hidden"
@@ -45,84 +49,101 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 flex items-end h-full min-h-[300px] px-5 sm:px-8 pb-7 pt-8">
-        <div>
-          {/* Logo + K-STAR wordmark */}
-          <div className="flex items-center gap-3 mb-2">
-            <img
-              src="/logo.png"
-              alt="K-STAR"
-              className="h-12 w-auto"
-            />
+        <div className="flex items-end justify-between w-full gap-4">
+          {/* Left: Text content */}
+          <div>
+            {/* Logo + K-STAR wordmark */}
+            <div className="flex items-center gap-3 mb-2">
+              <img
+                src="/logo.png"
+                alt="K-STAR"
+                className="h-12 w-auto"
+              />
+              <div
+                style={{
+                  fontFamily: "'Bebas Neue', cursive",
+                  fontSize: "1.3rem",
+                  fontWeight: 400,
+                  letterSpacing: "0.15em",
+                  background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                K-STAR CHART
+              </div>
+            </div>
+
+            {/* TOP 100 - large outlined text with gradient */}
             <div
               style={{
                 fontFamily: "'Bebas Neue', cursive",
-                fontSize: "1.3rem",
-                fontWeight: 400,
-                letterSpacing: "0.15em",
+                fontSize: "clamp(3.5rem, 9vw, 7.5rem)",
                 background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
+                lineHeight: 0.88,
+                letterSpacing: "0.02em",
+                filter: "drop-shadow(0 0 30px rgba(168, 85, 247, 0.3))",
               }}
             >
-              K-STAR CHART
+              TOP 100
+            </div>
+
+            {/* Week info row */}
+            <div className="flex items-center gap-3 mt-3 flex-wrap">
+              <div
+                className="text-black font-black px-3 py-1 text-sm tracking-widest uppercase"
+                style={{
+                  fontFamily: "'Bebas Neue', cursive",
+                  fontSize: "0.95rem",
+                  letterSpacing: "0.15em",
+                  background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
+                }}
+              >
+                K-POP
+              </div>
+              <div
+                className="text-xs font-bold tracking-widest uppercase"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  letterSpacing: "0.12em",
+                  background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                週間チャート
+              </div>
+            </div>
+
+            {/* Tagline */}
+            <div className="mt-3">
+              <p
+                className="text-gray-400 text-sm"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                K-POPの最新チャートをお届け
+              </p>
             </div>
           </div>
 
-          {/* TOP 100 - large outlined text with gradient */}
-          <div
-            style={{
-              fontFamily: "'Bebas Neue', cursive",
-              fontSize: "clamp(3.5rem, 9vw, 7.5rem)",
-              background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-              lineHeight: 0.88,
-              letterSpacing: "0.02em",
-              filter: "drop-shadow(0 0 30px rgba(168, 85, 247, 0.3))",
-            }}
-          >
-            TOP 100
-          </div>
-
-          {/* Week info row */}
-          <div className="flex items-center gap-3 mt-3 flex-wrap">
-            <div
-              className="text-black font-black px-3 py-1 text-sm tracking-widest uppercase"
-              style={{
-                fontFamily: "'Bebas Neue', cursive",
-                fontSize: "0.95rem",
-                letterSpacing: "0.15em",
-                background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
-              }}
-            >
-              K-POP
+          {/* Right: Banner image (hidden on mobile) */}
+          {bannerImage && (
+            <div className="hidden sm:block flex-shrink-0">
+              <img
+                src={bannerImage}
+                alt="Banner"
+                className="h-32 md:h-40 lg:h-48 w-auto rounded-lg shadow-lg"
+                style={{
+                  filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.3))",
+                }}
+              />
             </div>
-            <div
-              className="text-xs font-bold tracking-widest uppercase"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                letterSpacing: "0.12em",
-                background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              週間チャート
-            </div>
-          </div>
-
-          {/* Tagline */}
-          <div className="mt-3">
-            <p
-              className="text-gray-400 text-sm"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              K-POPの最新チャートをお届け
-            </p>
-          </div>
+          )}
         </div>
       </div>
     </div>

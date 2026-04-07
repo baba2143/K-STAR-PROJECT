@@ -33,6 +33,10 @@ import {
   loadArtist,
   loadSong,
   loadAlbum,
+  loadKStarArtistChart,
+  getAvailableArtistPeriods,
+  type KStarArtistCategory,
+  type KStarArtistChartData,
 } from '../lib/api';
 import type { Artist, Song, Album } from '../lib/types';
 
@@ -538,4 +542,28 @@ export function useSearch() {
         state.results.albums.length
       : 0,
   };
+}
+
+// ============================================
+// K-STAR Artist Chart Hooks
+// ============================================
+
+/**
+ * Hook to load K-STAR Artist Chart data
+ */
+export function useKStarArtistChart(category: KStarArtistCategory, period?: string) {
+  return useAsyncData<KStarArtistChartData>(
+    () => loadKStarArtistChart(category, period),
+    [category, period]
+  );
+}
+
+/**
+ * Hook to get available periods for K-STAR Artist Chart
+ */
+export function useAvailableArtistPeriods(category: KStarArtistCategory) {
+  return useAsyncData<string[]>(
+    () => getAvailableArtistPeriods(category),
+    [category]
+  );
 }

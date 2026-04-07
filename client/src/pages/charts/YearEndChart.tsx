@@ -7,7 +7,7 @@ import { useParams, useLocation } from "wouter";
 import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
-import ChartHero from "@/components/charts/ChartHero";
+import HeroSection from "@/components/HeroSection";
 import ChartEntry from "@/components/ChartEntry";
 import { ChartListSkeleton } from "@/components/ui/skeleton";
 import { useYearEndChart, useAvailableYears } from "@/hooks/useChartData";
@@ -78,11 +78,7 @@ export default function YearEndChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <ChartHero
-        chartType="songs"
-        title="K-STAR YEAR-END TOP 100"
-        subtitle="年間で最も人気のあるK-POP楽曲ランキング"
-      />
+      <HeroSection />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

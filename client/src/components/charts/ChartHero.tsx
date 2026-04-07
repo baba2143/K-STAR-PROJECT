@@ -11,6 +11,7 @@ interface ChartHeroProps {
   title: string;
   subtitle?: string;
   className?: string;
+  bannerImage?: string;
 }
 
 const chartColors: Record<ChartType, { from: string; to: string }> = {
@@ -27,6 +28,7 @@ export default function ChartHero({
   title,
   subtitle,
   className,
+  bannerImage,
 }: ChartHeroProps) {
   const colors = chartColors[chartType];
 
@@ -55,37 +57,48 @@ export default function ChartHero({
       />
 
       {/* Content */}
-      <div className="relative px-4 sm:px-6 py-8 sm:py-12">
-        <div className="flex items-center gap-4 mb-3">
-          <img
-            src="/logo.png"
-            alt="K-STAR"
-            className="h-10 sm:h-12 w-auto"
-          />
-          <div>
-            <h1
-              className="font-black uppercase leading-none"
-              style={{
-                fontFamily: "'Bebas Neue', cursive",
-                fontSize: "clamp(2rem, 6vw, 3.5rem)",
-                letterSpacing: "0.05em",
-                background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
-            >
-              {title}
-            </h1>
-            {subtitle && (
-              <p
-                className="text-gray-400 text-sm mt-1"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
+      <div className="relative px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <img
+              src="/logo.png"
+              alt="K-STAR"
+              className="h-10 sm:h-12 w-auto"
+            />
+            <div>
+              <h1
+                className="font-black uppercase leading-none"
+                style={{
+                  fontFamily: "'Bebas Neue', cursive",
+                  fontSize: "clamp(1.5rem, 5vw, 2.5rem)",
+                  letterSpacing: "0.05em",
+                  background: `linear-gradient(90deg, ${colors.from}, ${colors.to})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
               >
-                {subtitle}
-              </p>
-            )}
+                {title}
+              </h1>
+              {subtitle && (
+                <p
+                  className="text-gray-400 text-sm mt-1"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {subtitle}
+                </p>
+              )}
+            </div>
           </div>
+          {bannerImage && (
+            <div className="hidden sm:block flex-shrink-0">
+              <img
+                src={bannerImage}
+                alt="Banner"
+                className="h-16 sm:h-20 w-auto rounded-lg"
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

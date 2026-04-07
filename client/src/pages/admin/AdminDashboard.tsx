@@ -3,9 +3,9 @@
  */
 
 import { Link } from "wouter";
-import { Calendar, TrendingUp, Award, BarChart3, Settings, Plus } from "lucide-react";
+import { Calendar, TrendingUp, Award, BarChart3, Settings, Plus, Users, Star, Sparkles, Globe, Crown, Play, Flame } from "lucide-react";
 
-const chartTypes = [
+const songChartTypes = [
   {
     id: "weekly",
     title: "WEEKLY CHART",
@@ -37,6 +37,68 @@ const chartTypes = [
     icon: BarChart3,
     path: "/admin/charts/year-end",
     color: "from-orange-500 to-red-500",
+  },
+];
+
+const artistChartTypes = [
+  {
+    id: "artist-rookie",
+    title: "BEST ROOKIE",
+    description: "新人アーティストチャートの管理",
+    icon: Sparkles,
+    path: "/admin/charts/artist-rookie",
+    color: "from-green-400 to-emerald-500",
+  },
+  {
+    id: "artist-solo",
+    title: "BEST SOLO",
+    description: "ソロアーティストチャートの管理",
+    icon: Star,
+    path: "/admin/charts/artist-solo",
+    color: "from-blue-400 to-indigo-500",
+  },
+  {
+    id: "artist-group",
+    title: "BEST GROUP",
+    description: "グループチャートの管理",
+    icon: Users,
+    path: "/admin/charts/artist-group",
+    color: "from-purple-400 to-violet-500",
+  },
+  {
+    id: "artist-icon",
+    title: "BEST ICON",
+    description: "アイコンチャートの管理",
+    icon: Crown,
+    path: "/admin/charts/artist-icon",
+    color: "from-orange-400 to-amber-500",
+  },
+  {
+    id: "artist-global",
+    title: "BEST GLOBAL",
+    description: "グローバルチャートの管理",
+    icon: Globe,
+    path: "/admin/charts/artist-global",
+    color: "from-pink-400 to-rose-500",
+  },
+];
+
+const globalChampChartTypes = [
+  {
+    id: "global-mv",
+    title: "GLOBAL MUSIC VIDEO",
+    description: "MVチャートの管理",
+    icon: Play,
+    path: "/admin/charts/global-mv",
+    color: "from-cyan-400 to-blue-500",
+  },
+  {
+    id: "global-hot-mv",
+    title: "HOT NOW MUSIC VIDEO",
+    description: "急上昇MVチャートの管理",
+    icon: Flame,
+    path: "/admin/charts/global-hot-mv",
+    color: "from-red-400 to-orange-500",
   },
 ];
 
@@ -89,9 +151,91 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        {/* Chart Type Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {chartTypes.map((chart) => {
+        {/* K-STAR CHART */}
+        <h2
+          className="text-lg font-bold text-white mb-4"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          K-STAR CHART（楽曲チャート）
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {songChartTypes.map((chart) => {
+            const Icon = chart.icon;
+            return (
+              <Link
+                key={chart.id}
+                href={chart.path}
+                className="group bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg p-6 hover:border-[#2a2a2a] transition-all"
+              >
+                <div
+                  className={`w-12 h-12 rounded-lg bg-gradient-to-br ${chart.color} flex items-center justify-center mb-4`}
+                >
+                  <Icon size={24} className="text-white" />
+                </div>
+                <h3
+                  className="text-white font-bold mb-1 group-hover:text-[#a855f7] transition-colors"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {chart.title}
+                </h3>
+                <p
+                  className="text-gray-500 text-sm"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {chart.description}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* K-STAR ARTIST CHART */}
+        <h2
+          className="text-lg font-bold text-white mb-4"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          K-STAR ARTIST CHART（アーティストチャート）
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          {artistChartTypes.map((chart) => {
+            const Icon = chart.icon;
+            return (
+              <Link
+                key={chart.id}
+                href={chart.path}
+                className="group bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg p-6 hover:border-[#2a2a2a] transition-all"
+              >
+                <div
+                  className={`w-12 h-12 rounded-lg bg-gradient-to-br ${chart.color} flex items-center justify-center mb-4`}
+                >
+                  <Icon size={24} className="text-white" />
+                </div>
+                <h3
+                  className="text-white font-bold mb-1 group-hover:text-[#a855f7] transition-colors"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {chart.title}
+                </h3>
+                <p
+                  className="text-gray-500 text-sm"
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {chart.description}
+                </p>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* GLOBAL CHAMP CHART */}
+        <h2
+          className="text-lg font-bold text-white mb-4 mt-10"
+          style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+          GLOBAL CHAMP CHART（MVチャート）
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {globalChampChartTypes.map((chart) => {
             const Icon = chart.icon;
             return (
               <Link

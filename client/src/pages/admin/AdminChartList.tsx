@@ -20,6 +20,13 @@ const chartTypeLabels: Record<string, string> = {
   monthly: "MONTHLY CHART",
   season: "SEASON CHART",
   "year-end": "YEAR-END CHART",
+  "artist-rookie": "BEST ROOKIE",
+  "artist-solo": "BEST SOLO & FEATURING",
+  "artist-group": "BEST GROUP",
+  "artist-icon": "BEST ICON",
+  "artist-global": "BEST GLOBAL",
+  "global-mv": "GLOBAL MUSIC VIDEO CHART",
+  "global-hot-mv": "HOT NOW MUSIC VIDEO CHART",
 };
 
 const chartTypeDescriptions: Record<string, string> = {
@@ -27,7 +34,20 @@ const chartTypeDescriptions: Record<string, string> = {
   monthly: "月間チャートの管理",
   season: "四半期チャートの管理",
   "year-end": "年間チャートの管理",
+  "artist-rookie": "新人アーティストチャートの管理",
+  "artist-solo": "ソロアーティストチャートの管理",
+  "artist-group": "グループチャートの管理",
+  "artist-icon": "アイコンチャートの管理",
+  "artist-global": "グローバルチャートの管理",
+  "global-mv": "MVチャートの管理",
+  "global-hot-mv": "急上昇MVチャートの管理",
 };
+
+// Helper to check if it's an artist chart
+const isArtistChart = (type: string) => type.startsWith("artist-");
+
+// Helper to get artist category from type
+const getArtistCategory = (type: string) => type.replace("artist-", "");
 
 // Mock data - In production, this would come from API
 const mockCharts: Record<string, ChartPeriod[]> = {
@@ -50,6 +70,31 @@ const mockCharts: Record<string, ChartPeriod[]> = {
     { id: "2024", label: "2024年", publishedAt: "2025-01-01", totalEntries: 100, status: "published" },
     { id: "2023", label: "2023年", publishedAt: "2024-01-01", totalEntries: 100, status: "published" },
     { id: "2022", label: "2022年", publishedAt: "2023-01-01", totalEntries: 100, status: "published" },
+  ],
+  "artist-rookie": [
+    { id: "2025-03", label: "2025年3月", publishedAt: "2025-04-01", totalEntries: 10, status: "published" },
+    { id: "2025-02", label: "2025年2月", publishedAt: "2025-03-01", totalEntries: 10, status: "published" },
+    { id: "2025-01", label: "2025年1月", publishedAt: "2025-02-01", totalEntries: 10, status: "published" },
+  ],
+  "artist-solo": [
+    { id: "2025-03", label: "2025年3月", publishedAt: "2025-04-01", totalEntries: 10, status: "published" },
+    { id: "2025-02", label: "2025年2月", publishedAt: "2025-03-01", totalEntries: 10, status: "published" },
+    { id: "2025-01", label: "2025年1月", publishedAt: "2025-02-01", totalEntries: 10, status: "published" },
+  ],
+  "artist-group": [
+    { id: "2025-03", label: "2025年3月", publishedAt: "2025-04-01", totalEntries: 10, status: "published" },
+    { id: "2025-02", label: "2025年2月", publishedAt: "2025-03-01", totalEntries: 10, status: "published" },
+    { id: "2025-01", label: "2025年1月", publishedAt: "2025-02-01", totalEntries: 10, status: "published" },
+  ],
+  "artist-icon": [
+    { id: "2025-03", label: "2025年3月", publishedAt: "2025-04-01", totalEntries: 10, status: "published" },
+    { id: "2025-02", label: "2025年2月", publishedAt: "2025-03-01", totalEntries: 10, status: "published" },
+    { id: "2025-01", label: "2025年1月", publishedAt: "2025-02-01", totalEntries: 10, status: "published" },
+  ],
+  "artist-global": [
+    { id: "2025-03", label: "2025年3月", publishedAt: "2025-04-01", totalEntries: 10, status: "published" },
+    { id: "2025-02", label: "2025年2月", publishedAt: "2025-03-01", totalEntries: 10, status: "published" },
+    { id: "2025-01", label: "2025年1月", publishedAt: "2025-02-01", totalEntries: 10, status: "published" },
   ],
 };
 
@@ -196,7 +241,10 @@ export default function AdminChartList() {
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-end gap-2">
                         <Link
-                          href={`/charts/${chartType === "weekly" ? "weekly" : chartType}/${chart.id}`}
+                          href={isArtistChart(chartType)
+                            ? `/charts/artist/${getArtistCategory(chartType)}/${chart.id}`
+                            : `/charts/${chartType === "weekly" ? "weekly" : chartType}/${chart.id}`
+                          }
                           className="p-2 text-gray-400 hover:text-white transition-colors"
                           title="プレビュー"
                         >

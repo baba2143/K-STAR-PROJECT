@@ -359,3 +359,64 @@ export function isDataStale(updatedAt: string, maxAgeHours = 24): boolean {
   const diffHours = (now.getTime() - updateDate.getTime()) / (1000 * 60 * 60);
   return diffHours > maxAgeHours;
 }
+
+// ============================================
+// K-STAR Artist Chart API
+// ============================================
+
+export type KStarArtistCategory = 'rookie' | 'solo' | 'group' | 'icon' | 'global';
+
+export interface KStarArtistChartEntry {
+  rank: number;
+  previousRank: number | null;
+  peakPosition: number;
+  weeksOnChart: number;
+  artistId: string;
+  name: string;
+  nameKo?: string;
+  image: string;
+  trend: 'up' | 'down' | 'same' | 'new' | 're-entry';
+  isFavorite?: boolean;
+}
+
+export interface KStarArtistChartData {
+  id: string;
+  category: KStarArtistCategory;
+  period: string;
+  periodStart: string;
+  periodEnd: string;
+  publishedAt: string;
+  totalEntries: number;
+  entries: KStarArtistChartEntry[];
+}
+
+/**
+ * Load K-STAR Artist Chart data
+ */
+export async function loadKStarArtistChart(
+  category: KStarArtistCategory,
+  period?: string
+): Promise<KStarArtistChartData> {
+  if (period) {
+    return fetchJSON<KStarArtistChartData>(`/charts/artist/${category}/${period}.json`);
+  }
+  // Load index and get latest period
+  const index = await fetchJSON<{ latestPeriod: string; availablePeriods: string[] }>(
+    `/charts/artist/${category}/index.json`
+  );
+  return fetchJSON<KStarArtistChartData>(`/charts/artist/${category}/${index.latestPeriod}.json`);
+}
+
+/**
+ * Get available periods for K-STAR Artist Chart
+ */
+export async function getAvailableArtistPeriods(category: KStarArtistCategory): Promise<string[]> {
+  try {
+    const index = await fetchJSON<{ availablePeriods: string[] }>(
+      `/charts/artist/${category}/index.json`
+    );
+    return index.availablePeriods || [];
+  } catch {
+    return [];
+  }
+}

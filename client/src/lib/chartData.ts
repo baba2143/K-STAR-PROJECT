@@ -94,14 +94,14 @@ export const kstarCharts = [
 ];
 
 export const kstarArtistCharts = [
-  { label: "BEST ROOKIE", path: "/charts/artist/rookie", active: false, comingSoon: true },
-  { label: "BEST SOLO&FEATURING", path: "/charts/artist/solo", active: false, comingSoon: true },
-  { label: "BEST GROUP", path: "/charts/artist/group", active: false, comingSoon: true },
-  { label: "BEST ICON", path: "/charts/artist/icon", active: false, comingSoon: true },
-  { label: "BEST GLOBAL", path: "/charts/artist/global", active: false, comingSoon: true },
+  { label: "BEST ROOKIE", path: "/charts/artist/rookie", active: false },
+  { label: "BEST SOLO&FEATURING", path: "/charts/artist/solo", active: false },
+  { label: "BEST GROUP", path: "/charts/artist/group", active: false },
+  { label: "BEST ICON", path: "/charts/artist/icon", active: false },
+  { label: "BEST GLOBAL", path: "/charts/artist/global", active: false },
 ];
 
 export const globalChampCharts = [
-  { label: "GLOBAL MUSIC VIDEO CHART", path: "/charts/global/mv", active: false, comingSoon: true },
-  { label: "HOT NOW MUSIC VIDEO CHART", path: "/charts/global/hot-mv", active: false, comingSoon: true },
+  { label: "GLOBAL MUSIC VIDEO CHART", path: "/charts/global/global-mv", active: false },
+  { label: "HOT NOW MUSIC VIDEO CHART", path: "/charts/global/global-hot-mv", active: false },
 ];

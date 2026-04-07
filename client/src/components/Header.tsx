@@ -81,27 +81,12 @@ export default function Header() {
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
-            <a href="/" className="flex items-center gap-2">
+            <a href="/" className="flex items-center">
               <img
                 src="/logo.png"
                 alt="K-STAR"
                 className="h-8 w-auto"
               />
-              <span
-                className="text-white font-bold hidden sm:inline"
-                style={{
-                  fontFamily: "'Bebas Neue', cursive",
-                  fontWeight: 400,
-                  fontSize: "1.3rem",
-                  letterSpacing: "0.08em",
-                  background: "linear-gradient(90deg, #00d4ff, #a855f7, #ec4899)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
-                K-STAR
-              </span>
             </a>
           </div>
 

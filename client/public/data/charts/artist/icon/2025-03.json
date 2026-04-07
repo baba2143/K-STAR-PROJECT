@@ -1,0 +1,131 @@
+{
+  "id": "artist-icon-2025-03",
+  "category": "icon",
+  "period": "2025-03",
+  "periodStart": "2025-03-01",
+  "periodEnd": "2025-03-31",
+  "publishedAt": "2025-04-01T09:00:00Z",
+  "totalEntries": 10,
+  "entries": [
+    {
+      "rank": 1,
+      "previousRank": null,
+      "peakPosition": 1,
+      "weeksOnChart": 520,
+      "artistId": "bts",
+      "name": "BTS",
+      "nameKo": "방탄소년단",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "trend": "re-entry",
+      "isFavorite": false
+    },
+    {
+      "rank": 2,
+      "previousRank": 1,
+      "peakPosition": 1,
+      "weeksOnChart": 480,
+      "artistId": "blackpink",
+      "name": "BLACKPINK",
+      "nameKo": "블랙핑크",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebc9690bc711d04b3d4fd4b87c",
+      "trend": "down",
+      "isFavorite": true
+    },
+    {
+      "rank": 3,
+      "previousRank": 2,
+      "peakPosition": 1,
+      "weeksOnChart": 400,
+      "artistId": "bigbang",
+      "name": "BIGBANG",
+      "nameKo": "빅뱅",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6b3a759c7a1cda84c3be6f30",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 4,
+      "previousRank": 3,
+      "peakPosition": 2,
+      "weeksOnChart": 380,
+      "artistId": "exo",
+      "name": "EXO",
+      "nameKo": "엑소",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6e9b4d832fb8b2cefe3a9d7e",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 5,
+      "previousRank": 4,
+      "peakPosition": 2,
+      "weeksOnChart": 350,
+      "artistId": "twice",
+      "name": "TWICE",
+      "nameKo": "트와이스",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb7fd4b86d588d7a44ff6a8b0d",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 6,
+      "previousRank": 5,
+      "peakPosition": 3,
+      "weeksOnChart": 320,
+      "artistId": "iu",
+      "name": "IU",
+      "nameKo": "아이유",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb58e23b21ef049774d2c88c8c",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 7,
+      "previousRank": 6,
+      "peakPosition": 4,
+      "weeksOnChart": 280,
+      "artistId": "snsd",
+      "name": "Girls' Generation",
+      "nameKo": "소녀시대",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4eb35c9a8d8c6d5dbd7a4e55",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 8,
+      "previousRank": 7,
+      "peakPosition": 5,
+      "weeksOnChart": 250,
+      "artistId": "shinee",
+      "name": "SHINee",
+      "nameKo": "샤이니",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb8c1e67b6b0b8b8b8b8b8b8b8",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 9,
+      "previousRank": 8,
+      "peakPosition": 6,
+      "weeksOnChart": 220,
+      "artistId": "redvelvet",
+      "name": "Red Velvet",
+      "nameKo": "레드벨벳",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 10,
+      "previousRank": 9,
+      "peakPosition": 7,
+      "weeksOnChart": 200,
+      "artistId": "2ne1",
+      "name": "2NE1",
+      "nameKo": "투애니원",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "down",
+      "isFavorite": false
+    }
+  ]
+}

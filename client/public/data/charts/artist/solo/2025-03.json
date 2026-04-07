@@ -1,0 +1,131 @@
+{
+  "id": "artist-solo-2025-03",
+  "category": "solo",
+  "period": "2025-03",
+  "periodStart": "2025-03-01",
+  "periodEnd": "2025-03-31",
+  "publishedAt": "2025-04-01T09:00:00Z",
+  "totalEntries": 10,
+  "entries": [
+    {
+      "rank": 1,
+      "previousRank": 1,
+      "peakPosition": 1,
+      "weeksOnChart": 52,
+      "artistId": "jimin",
+      "name": "Jimin",
+      "nameKo": "지민",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 2,
+      "previousRank": 3,
+      "peakPosition": 1,
+      "weeksOnChart": 48,
+      "artistId": "jungkook",
+      "name": "Jung Kook",
+      "nameKo": "정국",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebc9690bc711d04b3d4fd4b87c",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 3,
+      "previousRank": 2,
+      "peakPosition": 1,
+      "weeksOnChart": 85,
+      "artistId": "iu",
+      "name": "IU",
+      "nameKo": "아이유",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6b3a759c7a1cda84c3be6f30",
+      "trend": "down",
+      "isFavorite": true
+    },
+    {
+      "rank": 4,
+      "previousRank": 4,
+      "peakPosition": 2,
+      "weeksOnChart": 36,
+      "artistId": "rose",
+      "name": "ROSÉ",
+      "nameKo": "로제",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6e9b4d832fb8b2cefe3a9d7e",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 5,
+      "previousRank": 6,
+      "peakPosition": 3,
+      "weeksOnChart": 42,
+      "artistId": "taeyeon",
+      "name": "TAEYEON",
+      "nameKo": "태연",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb7fd4b86d588d7a44ff6a8b0d",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 6,
+      "previousRank": 5,
+      "peakPosition": 2,
+      "weeksOnChart": 38,
+      "artistId": "suga",
+      "name": "SUGA",
+      "nameKo": "슈가",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb58e23b21ef049774d2c88c8c",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 7,
+      "previousRank": 8,
+      "peakPosition": 4,
+      "weeksOnChart": 25,
+      "artistId": "jennie",
+      "name": "JENNIE",
+      "nameKo": "제니",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4eb35c9a8d8c6d5dbd7a4e55",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 8,
+      "previousRank": 7,
+      "peakPosition": 5,
+      "weeksOnChart": 30,
+      "artistId": "v",
+      "name": "V",
+      "nameKo": "뷔",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb8c1e67b6b0b8b8b8b8b8b8b8",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 9,
+      "previousRank": 10,
+      "peakPosition": 6,
+      "weeksOnChart": 22,
+      "artistId": "sunmi",
+      "name": "Sunmi",
+      "nameKo": "선미",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 10,
+      "previousRank": 9,
+      "peakPosition": 7,
+      "weeksOnChart": 18,
+      "artistId": "hwasa",
+      "name": "Hwasa",
+      "nameKo": "화사",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "down",
+      "isFavorite": false
+    }
+  ]
+}

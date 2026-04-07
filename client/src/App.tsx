@@ -11,6 +11,8 @@ import SeasonChart from "./pages/charts/SeasonChart";
 import YearEndChart from "./pages/charts/YearEndChart";
 import AlbumChart from "./pages/charts/AlbumChart";
 import ArtistChart from "./pages/charts/ArtistChart";
+import KStarArtistChart from "./pages/charts/KStarArtistChart";
+import GlobalMVChart from "./pages/charts/GlobalMVChart";
 import ChartArchive from "./pages/charts/ChartArchive";
 import ArtistDetail from "./pages/ArtistDetail";
 import SongDetail from "./pages/SongDetail";
@@ -43,14 +45,11 @@ function Router() {
       <Route path="/charts/artists" component={ArtistChart} />
       <Route path="/charts/artists/:date" component={ArtistChart} />
       {/* K-STAR ARTIST CHART */}
-      <Route path="/charts/artist/rookie" component={ArtistChart} />
-      <Route path="/charts/artist/solo" component={ArtistChart} />
-      <Route path="/charts/artist/group" component={ArtistChart} />
-      <Route path="/charts/artist/icon" component={ArtistChart} />
-      <Route path="/charts/artist/global" component={ArtistChart} />
+      <Route path="/charts/artist/:category" component={KStarArtistChart} />
+      <Route path="/charts/artist/:category/:period" component={KStarArtistChart} />
       {/* GLOBAL CHAMP CHART */}
-      <Route path="/charts/global/mv" component={SongChart} />
-      <Route path="/charts/global/hot-mv" component={SongChart} />
+      <Route path="/charts/global/:type" component={GlobalMVChart} />
+      <Route path="/charts/global/:type/:period" component={GlobalMVChart} />
       {/* Detail Routes */}
       <Route path="/artists/:id" component={ArtistDetail} />
       <Route path="/songs/:id" component={SongDetail} />

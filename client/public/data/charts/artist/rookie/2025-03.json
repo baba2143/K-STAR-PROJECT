@@ -1,0 +1,131 @@
+{
+  "id": "artist-rookie-2025-03",
+  "category": "rookie",
+  "period": "2025-03",
+  "periodStart": "2025-03-01",
+  "periodEnd": "2025-03-31",
+  "publishedAt": "2025-04-01T09:00:00Z",
+  "totalEntries": 10,
+  "entries": [
+    {
+      "rank": 1,
+      "previousRank": null,
+      "peakPosition": 1,
+      "weeksOnChart": 1,
+      "artistId": "illit",
+      "name": "ILLIT",
+      "nameKo": "아일릿",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6f3a9f62a5b66d8e8d8d8d8d",
+      "trend": "new",
+      "isFavorite": false
+    },
+    {
+      "rank": 2,
+      "previousRank": 1,
+      "peakPosition": 1,
+      "weeksOnChart": 12,
+      "artistId": "kiss-of-life",
+      "name": "KISS OF LIFE",
+      "nameKo": "키스오브라이프",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 3,
+      "previousRank": 2,
+      "peakPosition": 2,
+      "weeksOnChart": 10,
+      "artistId": "babymonster",
+      "name": "BABYMONSTER",
+      "nameKo": "베이비몬스터",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebc9690bc711d04b3d4fd4b87c",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 4,
+      "previousRank": 3,
+      "peakPosition": 3,
+      "weeksOnChart": 8,
+      "artistId": "riize",
+      "name": "RIIZE",
+      "nameKo": "라이즈",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4eb35c9a8d8c6d5dbd7a4e55",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 5,
+      "previousRank": 5,
+      "peakPosition": 4,
+      "weeksOnChart": 6,
+      "artistId": "zerobaseone",
+      "name": "ZEROBASEONE",
+      "nameKo": "제로베이스원",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6e9b4d832fb8b2cefe3a9d7e",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 6,
+      "previousRank": 4,
+      "peakPosition": 4,
+      "weeksOnChart": 14,
+      "artistId": "boynextdoor",
+      "name": "BOYNEXTDOOR",
+      "nameKo": "보이넥스트도어",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb7fd4b86d588d7a44ff6a8b0d",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 7,
+      "previousRank": 6,
+      "peakPosition": 5,
+      "weeksOnChart": 12,
+      "artistId": "xikers",
+      "name": "xikers",
+      "nameKo": "싸이커스",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb58e23b21ef049774d2c88c8c",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 8,
+      "previousRank": 8,
+      "peakPosition": 6,
+      "weeksOnChart": 10,
+      "artistId": "twice-j",
+      "name": "TWS",
+      "nameKo": "투어스",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb8c1e67b6b0b8b8b8b8b8b8b8",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 9,
+      "previousRank": 7,
+      "peakPosition": 7,
+      "weeksOnChart": 8,
+      "artistId": "unis",
+      "name": "UNIS",
+      "nameKo": "유니스",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 10,
+      "previousRank": 9,
+      "peakPosition": 8,
+      "weeksOnChart": 6,
+      "artistId": "izna",
+      "name": "izna",
+      "nameKo": "이즈나",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "down",
+      "isFavorite": false
+    }
+  ]
+}

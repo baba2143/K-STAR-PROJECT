@@ -12,6 +12,7 @@ interface SongData {
   artistName: string;
   spotifyId?: string;
   coverImage?: string;
+  youtubeId?: string;
 }
 
 interface ArtistData {
@@ -48,7 +49,30 @@ interface ChartEditorEntry extends Omit<SongChartEntry, 'songId' | 'artistId'> {
   id: string; // local editing ID
   songId?: string; // 楽曲マスターとの紐付け
   artistId?: string; // アーティストマスターとの紐付け
+  // MV chart specific fields
+  weeklyViews?: number;
+  totalViews?: number;
+  youtubeId?: string;
 }
+
+interface ArtistChartEditorEntry {
+  id: string;
+  rank: number;
+  name: string;
+  nameKo?: string;
+  previousRank: number | null;
+  peakPosition: number;
+  weeksOnChart: number;
+  trend: TrendDirection;
+  image?: string;
+  artistId?: string;
+}
+
+// Helper to check if it's an artist chart
+const isArtistChartType = (type: string) => type.startsWith("artist-");
+
+// Helper to check if it's an MV chart
+const isMVChartType = (type: string) => type.startsWith("global-");
 
 interface ChartEditorProps {
   onExport?: (data: { chartType: ChartType; week: string; entries: ChartEditorEntry[] }) => void;
@@ -56,14 +80,18 @@ interface ChartEditorProps {
   artists?: ArtistData[];
 }
 
-export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: ChartEditorProps) {
-  // Note: artists は将来的にアーティスト単独検索で使用予定
-  void _artists;
+export function ChartEditor({ onExport, songs = [], artists = [] }: ChartEditorProps) {
   const [chartType, setChartType] = useState<ChartType>("songs");
   const [week, setWeek] = useState(getDefaultWeek());
   const [entries, setEntries] = useState<ChartEditorEntry[]>([
     createEmptyEntry(1),
   ]);
+  const [artistEntries, setArtistEntries] = useState<ArtistChartEditorEntry[]>([
+    createEmptyArtistEntry(1),
+  ]);
+
+  const isArtistChart = isArtistChartType(chartType);
+  const isMVChart = isMVChartType(chartType);
 
   // 楽曲追加モード: "select" | "search"
   const [addMode, setAddMode] = useState<"select" | "search">("select");
@@ -197,22 +225,35 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
       isNew: true,
       songId: song.id,
       artistId: song.artistId,
+      youtubeId: song.youtubeId,
+      weeklyViews: 0,
+      totalViews: 0,
     };
 
     setEntries((prev) => [...prev, newEntry]);
   };
 
   const addEntry = useCallback(() => {
-    setEntries((prev) => [...prev, createEmptyEntry(prev.length + 1)]);
-  }, []);
+    if (isArtistChart) {
+      setArtistEntries((prev) => [...prev, createEmptyArtistEntry(prev.length + 1)]);
+    } else {
+      setEntries((prev) => [...prev, createEmptyEntry(prev.length + 1)]);
+    }
+  }, [isArtistChart]);
 
   const removeEntry = useCallback((id: string) => {
-    setEntries((prev) => {
-      const filtered = prev.filter((e) => e.id !== id);
-      // Re-rank
-      return filtered.map((e, idx) => ({ ...e, rank: idx + 1 }));
-    });
-  }, []);
+    if (isArtistChart) {
+      setArtistEntries((prev) => {
+        const filtered = prev.filter((e) => e.id !== id);
+        return filtered.map((e, idx) => ({ ...e, rank: idx + 1 }));
+      });
+    } else {
+      setEntries((prev) => {
+        const filtered = prev.filter((e) => e.id !== id);
+        return filtered.map((e, idx) => ({ ...e, rank: idx + 1 }));
+      });
+    }
+  }, [isArtistChart]);
 
   const updateEntry = useCallback(
     (id: string, field: keyof ChartEditorEntry, value: unknown) => {
@@ -223,21 +264,58 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
     []
   );
 
+  const updateArtistEntry = useCallback(
+    (id: string, field: keyof ArtistChartEditorEntry, value: unknown) => {
+      setArtistEntries((prev) =>
+        prev.map((e) => (e.id === id ? { ...e, [field]: value } : e))
+      );
+    },
+    []
+  );
+
   const moveEntry = useCallback((id: string, direction: "up" | "down") => {
-    setEntries((prev) => {
-      const idx = prev.findIndex((e) => e.id === id);
-      if (idx === -1) return prev;
+    if (isArtistChart) {
+      setArtistEntries((prev) => {
+        const idx = prev.findIndex((e) => e.id === id);
+        if (idx === -1) return prev;
+        const newIdx = direction === "up" ? idx - 1 : idx + 1;
+        if (newIdx < 0 || newIdx >= prev.length) return prev;
+        const newEntries = [...prev];
+        [newEntries[idx], newEntries[newIdx]] = [newEntries[newIdx], newEntries[idx]];
+        return newEntries.map((e, i) => ({ ...e, rank: i + 1 }));
+      });
+    } else {
+      setEntries((prev) => {
+        const idx = prev.findIndex((e) => e.id === id);
+        if (idx === -1) return prev;
+        const newIdx = direction === "up" ? idx - 1 : idx + 1;
+        if (newIdx < 0 || newIdx >= prev.length) return prev;
+        const newEntries = [...prev];
+        [newEntries[idx], newEntries[newIdx]] = [newEntries[newIdx], newEntries[idx]];
+        return newEntries.map((e, i) => ({ ...e, rank: i + 1 }));
+      });
+    }
+  }, [isArtistChart]);
 
-      const newIdx = direction === "up" ? idx - 1 : idx + 1;
-      if (newIdx < 0 || newIdx >= prev.length) return prev;
+  // 登録済みアーティストからエントリーを追加
+  const addFromArtist = (artistId: string) => {
+    const artist = artists.find((a) => a.id === artistId);
+    if (!artist) return;
 
-      const newEntries = [...prev];
-      [newEntries[idx], newEntries[newIdx]] = [newEntries[newIdx], newEntries[idx]];
+    const newEntry: ArtistChartEditorEntry = {
+      id: crypto.randomUUID(),
+      rank: artistEntries.length + 1,
+      name: artist.name,
+      nameKo: "",
+      previousRank: null,
+      peakPosition: artistEntries.length + 1,
+      weeksOnChart: 1,
+      trend: "new",
+      artistId: artist.id,
+    };
 
-      // Re-rank
-      return newEntries.map((e, i) => ({ ...e, rank: i + 1 }));
-    });
-  }, []);
+    setArtistEntries((prev) => [...prev, newEntry]);
+  };
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
@@ -247,24 +325,60 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
     setSaveSuccess(false);
 
     // チャートデータを構築
-    const chartData = {
-      chartType,
-      week,
-      updatedAt: new Date().toISOString(),
-      entries: entries.map((e) => ({
-        rank: e.rank,
-        songId: e.songId,
-        artistId: e.artistId,
-        title: e.title,
-        artist: e.artist,
-        coverImage: e.coverImage,
-        previousRank: e.previousRank,
-        peakPosition: e.peakPosition,
-        weeksOnChart: e.weeksOnChart,
-        trend: e.trend,
-        isNew: e.isNew,
-      })),
-    };
+    const chartData = isArtistChart
+      ? {
+          chartType,
+          week,
+          updatedAt: new Date().toISOString(),
+          entries: artistEntries.map((e) => ({
+            rank: e.rank,
+            artistId: e.artistId,
+            name: e.name,
+            nameKo: e.nameKo,
+            image: e.image,
+            previousRank: e.previousRank,
+            peakPosition: e.peakPosition,
+            weeksOnChart: e.weeksOnChart,
+            trend: e.trend,
+          })),
+        }
+      : isMVChart
+        ? {
+            chartType,
+            week,
+            updatedAt: new Date().toISOString(),
+            entries: entries.map((e) => ({
+              rank: e.rank,
+              songId: e.songId,
+              artistId: e.artistId,
+              title: e.title,
+              artist: e.artist,
+              coverImage: e.coverImage,
+              youtubeId: e.youtubeId,
+              weeklyViews: e.weeklyViews || 0,
+              totalViews: e.totalViews || 0,
+              previousRank: e.previousRank,
+              trend: e.trend,
+            })),
+          }
+        : {
+            chartType,
+            week,
+            updatedAt: new Date().toISOString(),
+            entries: entries.map((e) => ({
+              rank: e.rank,
+              songId: e.songId,
+              artistId: e.artistId,
+              title: e.title,
+              artist: e.artist,
+              coverImage: e.coverImage,
+              previousRank: e.previousRank,
+              peakPosition: e.peakPosition,
+              weeksOnChart: e.weeksOnChart,
+              trend: e.trend,
+              isNew: e.isNew,
+            })),
+          };
 
     // Supabaseに保存
     const success = await saveChart(chartType, week, chartData);
@@ -278,7 +392,7 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
     onExport?.({ chartType, week, entries });
 
     setIsSaving(false);
-  }, [chartType, week, entries, onExport]);
+  }, [chartType, week, entries, artistEntries, isArtistChart, isMVChart, onExport]);
 
   return (
     <div className="space-y-6">
@@ -324,61 +438,34 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
         </CardContent>
       </Card>
 
-      {/* Song Add Panel */}
-      <Card>
-        <CardHeader>
-          <CardTitle>楽曲追加</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Tab Switcher */}
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setAddMode("select")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                addMode === "select"
-                  ? "bg-primary text-white"
-                  : "bg-bg-input text-gray-400 hover:text-white"
-              }`}
-            >
-              <Music className="w-4 h-4 inline mr-2" />
-              登録済みから選択
-            </button>
-            <button
-              onClick={() => setAddMode("search")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                addMode === "search"
-                  ? "bg-primary text-white"
-                  : "bg-bg-input text-gray-400 hover:text-white"
-              }`}
-            >
-              <Search className="w-4 h-4 inline mr-2" />
-              ID検索
-            </button>
-          </div>
-
-          {/* Select Mode */}
-          {addMode === "select" && (
+      {/* Song/Artist Add Panel */}
+      {isArtistChart ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>アーティスト追加</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-3">
-              {songs.length === 0 ? (
+              {artists.length === 0 ? (
                 <p className="text-gray-500 text-sm">
-                  登録済み楽曲がありません。「楽曲管理」タブで楽曲を追加してください。
+                  登録済みアーティストがありません。「アーティスト管理」タブでアーティストを追加してください。
                 </p>
               ) : (
                 <div className="flex gap-3 items-end">
                   <div className="flex-1">
                     <Select
-                      label="楽曲を選択"
+                      label="アーティストを選択"
                       options={[
-                        { value: "", label: "楽曲を選択..." },
-                        ...songs.map((s) => ({
-                          value: s.id,
-                          label: `${s.title} - ${s.artistName}`,
+                        { value: "", label: "アーティストを選択..." },
+                        ...artists.map((a) => ({
+                          value: a.id,
+                          label: a.name,
                         })),
                       ]}
                       value=""
                       onChange={(e) => {
                         if (e.target.value) {
-                          addFromSong(e.target.value);
+                          addFromArtist(e.target.value);
                         }
                       }}
                     />
@@ -386,87 +473,152 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
                 </div>
               )}
             </div>
-          )}
-
-          {/* Search Mode */}
-          {addMode === "search" && (
-            <div className="space-y-3">
-              <div className="flex gap-3 items-end">
-                <div className="flex-1">
-                  <Input
-                    label="Spotify ID または 曲ID"
-                    placeholder="例: 1CPZ5BxNNd0n0nF4Orb9JS"
-                    value={searchId}
-                    onChange={(e) => setSearchId(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSearchById();
-                    }}
-                  />
-                </div>
-                <Button
-                  onClick={handleSearchById}
-                  disabled={searchLoading || !searchId.trim()}
-                >
-                  {searchLoading ? "検索中..." : "検索"}
-                </Button>
-              </div>
-
-              {searchError && (
-                <p className="text-red-400 text-sm">{searchError}</p>
-              )}
-
-              {searchResult && (
-                <div className="p-4 bg-bg-input rounded-lg space-y-3">
-                  <div className="flex items-center gap-4">
-                    {searchResult.coverImage && (
-                      <img
-                        src={searchResult.coverImage}
-                        alt={searchResult.title}
-                        className="w-16 h-16 rounded object-cover"
-                      />
-                    )}
-                    <div className="flex-1">
-                      <p className="font-medium text-white">{searchResult.title}</p>
-                      {searchResult.fromLocal && (
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded">
-                          登録済み楽曲
-                        </span>
-                      )}
-                      {!searchResult.fromLocal && (
-                        <span className="inline-block mt-1 px-2 py-0.5 bg-yellow-600/20 text-yellow-400 text-xs rounded">
-                          Spotifyから取得（アーティスト名を入力してください）
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {/* アーティスト名入力（Spotify検索時は手動入力が必要） */}
-                  {!searchResult.fromLocal && (
-                    <div>
-                      <Input
-                        label="アーティスト名"
-                        placeholder="アーティスト名を入力"
-                        value={searchResult.artist}
-                        onChange={(e) =>
-                          setSearchResult({ ...searchResult, artist: e.target.value })
-                        }
-                      />
-                    </div>
-                  )}
-                  {searchResult.fromLocal && searchResult.artist && (
-                    <p className="text-gray-400 text-sm">アーティスト: {searchResult.artist}</p>
-                  )}
-                  <div className="flex justify-end">
-                    <Button onClick={addFromSearchResult}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      追加
-                    </Button>
-                  </div>
-                </div>
-              )}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>楽曲追加</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Tab Switcher */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setAddMode("select")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  addMode === "select"
+                    ? "bg-primary text-white"
+                    : "bg-bg-input text-gray-400 hover:text-white"
+                }`}
+              >
+                <Music className="w-4 h-4 inline mr-2" />
+                登録済みから選択
+              </button>
+              <button
+                onClick={() => setAddMode("search")}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  addMode === "search"
+                    ? "bg-primary text-white"
+                    : "bg-bg-input text-gray-400 hover:text-white"
+                }`}
+              >
+                <Search className="w-4 h-4 inline mr-2" />
+                ID検索
+              </button>
             </div>
-          )}
-        </CardContent>
-      </Card>
+
+            {/* Select Mode */}
+            {addMode === "select" && (
+              <div className="space-y-3">
+                {songs.length === 0 ? (
+                  <p className="text-gray-500 text-sm">
+                    登録済み楽曲がありません。「楽曲管理」タブで楽曲を追加してください。
+                  </p>
+                ) : (
+                  <div className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <Select
+                        label="楽曲を選択"
+                        options={[
+                          { value: "", label: "楽曲を選択..." },
+                          ...songs.map((s) => ({
+                            value: s.id,
+                            label: `${s.title} - ${s.artistName}`,
+                          })),
+                        ]}
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            addFromSong(e.target.value);
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Search Mode */}
+            {addMode === "search" && (
+              <div className="space-y-3">
+                <div className="flex gap-3 items-end">
+                  <div className="flex-1">
+                    <Input
+                      label="Spotify ID または 曲ID"
+                      placeholder="例: 1CPZ5BxNNd0n0nF4Orb9JS"
+                      value={searchId}
+                      onChange={(e) => setSearchId(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSearchById();
+                      }}
+                    />
+                  </div>
+                  <Button
+                    onClick={handleSearchById}
+                    disabled={searchLoading || !searchId.trim()}
+                  >
+                    {searchLoading ? "検索中..." : "検索"}
+                  </Button>
+                </div>
+
+                {searchError && (
+                  <p className="text-red-400 text-sm">{searchError}</p>
+                )}
+
+                {searchResult && (
+                  <div className="p-4 bg-bg-input rounded-lg space-y-3">
+                    <div className="flex items-center gap-4">
+                      {searchResult.coverImage && (
+                        <img
+                          src={searchResult.coverImage}
+                          alt={searchResult.title}
+                          className="w-16 h-16 rounded object-cover"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <p className="font-medium text-white">{searchResult.title}</p>
+                        {searchResult.fromLocal && (
+                          <span className="inline-block mt-1 px-2 py-0.5 bg-green-600/20 text-green-400 text-xs rounded">
+                            登録済み楽曲
+                          </span>
+                        )}
+                        {!searchResult.fromLocal && (
+                          <span className="inline-block mt-1 px-2 py-0.5 bg-yellow-600/20 text-yellow-400 text-xs rounded">
+                            Spotifyから取得（アーティスト名を入力してください）
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {/* アーティスト名入力（Spotify検索時は手動入力が必要） */}
+                    {!searchResult.fromLocal && (
+                      <div>
+                        <Input
+                          label="アーティスト名"
+                          placeholder="アーティスト名を入力"
+                          value={searchResult.artist}
+                          onChange={(e) =>
+                            setSearchResult({ ...searchResult, artist: e.target.value })
+                          }
+                        />
+                      </div>
+                    )}
+                    {searchResult.fromLocal && searchResult.artist && (
+                      <p className="text-gray-400 text-sm">アーティスト: {searchResult.artist}</p>
+                    )}
+                    <div className="flex justify-end">
+                      <Button onClick={addFromSearchResult}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        追加
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Entries Table */}
       <Card>
@@ -474,7 +626,7 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
           <CardTitle>
             エントリー一覧
             <span className="ml-2 text-sm font-normal text-gray-400">
-              ({entries.length}件)
+              ({isArtistChart ? artistEntries.length : entries.length}件)
             </span>
           </CardTitle>
           <Button onClick={addEntry} variant="secondary">
@@ -483,37 +635,112 @@ export function ChartEditor({ onExport, songs = [], artists: _artists = [] }: Ch
           </Button>
         </CardHeader>
         <CardContent>
-          {/* Table Header */}
-          <div className="grid grid-cols-[40px_60px_1fr_1fr_80px_100px_100px_80px] gap-2 px-3 py-2 text-xs font-medium text-gray-400 border-b border-border">
-            <div></div>
-            <div>#</div>
-            <div>タイトル</div>
-            <div>アーティスト</div>
-            <div>前週</div>
-            <div>トレンド</div>
-            <div>週数</div>
-            <div>操作</div>
-          </div>
+          {isArtistChart ? (
+            <>
+              {/* Artist Table Header */}
+              <div className="grid grid-cols-[40px_60px_1fr_1fr_80px_100px_100px_80px] gap-2 px-3 py-2 text-xs font-medium text-gray-400 border-b border-border">
+                <div></div>
+                <div>#</div>
+                <div>アーティスト名</div>
+                <div>韓国語名</div>
+                <div>前週</div>
+                <div>トレンド</div>
+                <div>週数</div>
+                <div>操作</div>
+              </div>
 
-          {/* Entries */}
-          <div className="divide-y divide-border">
-            {entries.map((entry, idx) => (
-              <ChartEntryRow
-                key={entry.id}
-                entry={entry}
-                index={idx}
-                totalEntries={entries.length}
-                onUpdate={(field, value) => updateEntry(entry.id, field, value)}
-                onMove={(direction) => moveEntry(entry.id, direction)}
-                onRemove={() => removeEntry(entry.id)}
-              />
-            ))}
-          </div>
+              {/* Artist Entries */}
+              <div className="divide-y divide-border">
+                {artistEntries.map((entry, idx) => (
+                  <ArtistChartEntryRow
+                    key={entry.id}
+                    entry={entry}
+                    index={idx}
+                    totalEntries={artistEntries.length}
+                    onUpdate={(field, value) => updateArtistEntry(entry.id, field, value)}
+                    onMove={(direction) => moveEntry(entry.id, direction)}
+                    onRemove={() => removeEntry(entry.id)}
+                  />
+                ))}
+              </div>
 
-          {entries.length === 0 && (
-            <div className="py-12 text-center text-gray-500">
-              エントリーがありません。「追加」をクリックして開始してください。
-            </div>
+              {artistEntries.length === 0 && (
+                <div className="py-12 text-center text-gray-500">
+                  エントリーがありません。「追加」をクリックして開始してください。
+                </div>
+              )}
+            </>
+          ) : isMVChart ? (
+            <>
+              {/* MV Table Header */}
+              <div className="grid grid-cols-[40px_60px_1fr_1fr_120px_120px_80px_100px_80px] gap-2 px-3 py-2 text-xs font-medium text-gray-400 border-b border-border">
+                <div></div>
+                <div>#</div>
+                <div>MV名</div>
+                <div>アーティスト</div>
+                <div>週間再生数</div>
+                <div>総再生数</div>
+                <div>前週</div>
+                <div>トレンド</div>
+                <div>操作</div>
+              </div>
+
+              {/* MV Entries */}
+              <div className="divide-y divide-border">
+                {entries.map((entry, idx) => (
+                  <MVChartEntryRow
+                    key={entry.id}
+                    entry={entry}
+                    index={idx}
+                    totalEntries={entries.length}
+                    onUpdate={(field, value) => updateEntry(entry.id, field, value)}
+                    onMove={(direction) => moveEntry(entry.id, direction)}
+                    onRemove={() => removeEntry(entry.id)}
+                  />
+                ))}
+              </div>
+
+              {entries.length === 0 && (
+                <div className="py-12 text-center text-gray-500">
+                  エントリーがありません。「追加」をクリックして開始してください。
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Song Table Header */}
+              <div className="grid grid-cols-[40px_60px_1fr_1fr_80px_100px_100px_80px] gap-2 px-3 py-2 text-xs font-medium text-gray-400 border-b border-border">
+                <div></div>
+                <div>#</div>
+                <div>タイトル</div>
+                <div>アーティスト</div>
+                <div>前週</div>
+                <div>トレンド</div>
+                <div>週数</div>
+                <div>操作</div>
+              </div>
+
+              {/* Song Entries */}
+              <div className="divide-y divide-border">
+                {entries.map((entry, idx) => (
+                  <ChartEntryRow
+                    key={entry.id}
+                    entry={entry}
+                    index={idx}
+                    totalEntries={entries.length}
+                    onUpdate={(field, value) => updateEntry(entry.id, field, value)}
+                    onMove={(direction) => moveEntry(entry.id, direction)}
+                    onRemove={() => removeEntry(entry.id)}
+                  />
+                ))}
+              </div>
+
+              {entries.length === 0 && (
+                <div className="py-12 text-center text-gray-500">
+                  エントリーがありません。「追加」をクリックして開始してください。
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
@@ -647,5 +874,241 @@ function createEmptyEntry(rank: number): ChartEditorEntry {
     trend: "new",
     isNew: true,
   };
+}
+
+function createEmptyArtistEntry(rank: number): ArtistChartEditorEntry {
+  return {
+    id: crypto.randomUUID(),
+    rank,
+    name: "",
+    nameKo: "",
+    previousRank: null,
+    peakPosition: rank,
+    weeksOnChart: 1,
+    trend: "new",
+  };
+}
+
+interface ArtistChartEntryRowProps {
+  entry: ArtistChartEditorEntry;
+  index: number;
+  totalEntries: number;
+  onUpdate: (field: keyof ArtistChartEditorEntry, value: unknown) => void;
+  onMove: (direction: "up" | "down") => void;
+  onRemove: () => void;
+}
+
+function ArtistChartEntryRow({
+  entry,
+  index,
+  totalEntries,
+  onUpdate,
+  onMove,
+  onRemove,
+}: ArtistChartEntryRowProps) {
+  return (
+    <div className="grid grid-cols-[40px_60px_1fr_1fr_80px_100px_100px_80px] gap-2 px-3 py-3 items-center hover:bg-bg-input/50 transition-colors">
+      {/* Drag Handle */}
+      <div className="flex justify-center">
+        <GripVertical className="w-4 h-4 text-gray-500 cursor-grab" />
+      </div>
+
+      {/* Rank */}
+      <div className="font-mono text-lg font-bold text-primary">
+        {entry.rank}
+      </div>
+
+      {/* Artist Name */}
+      <Input
+        value={entry.name}
+        onChange={(e) => onUpdate("name", e.target.value)}
+        placeholder="アーティスト名"
+        className="py-1.5"
+      />
+
+      {/* Korean Name */}
+      <Input
+        value={entry.nameKo || ""}
+        onChange={(e) => onUpdate("nameKo", e.target.value)}
+        placeholder="韓国語名（任意）"
+        className="py-1.5"
+      />
+
+      {/* Previous Rank */}
+      <Input
+        type="number"
+        value={entry.previousRank ?? ""}
+        onChange={(e) =>
+          onUpdate(
+            "previousRank",
+            e.target.value ? parseInt(e.target.value) : null
+          )
+        }
+        placeholder="-"
+        className="py-1.5 text-center"
+        min={1}
+      />
+
+      {/* Trend */}
+      <Select
+        options={trendOptions}
+        value={entry.trend}
+        onChange={(e) => onUpdate("trend", e.target.value as TrendDirection)}
+        className="py-1.5"
+      />
+
+      {/* Weeks on Chart */}
+      <Input
+        type="number"
+        value={entry.weeksOnChart}
+        onChange={(e) => onUpdate("weeksOnChart", parseInt(e.target.value) || 1)}
+        className="py-1.5 text-center"
+        min={1}
+      />
+
+      {/* Actions */}
+      <div className="flex gap-1">
+        <button
+          onClick={() => onMove("up")}
+          disabled={index === 0}
+          className="p-1.5 text-gray-400 hover:text-white hover:bg-bg-input rounded disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <ChevronUp className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onMove("down")}
+          disabled={index === totalEntries - 1}
+          className="p-1.5 text-gray-400 hover:text-white hover:bg-bg-input rounded disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <ChevronDown className="w-4 h-4" />
+        </button>
+        <button
+          onClick={onRemove}
+          className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface MVChartEntryRowProps {
+  entry: ChartEditorEntry;
+  index: number;
+  totalEntries: number;
+  onUpdate: (field: keyof ChartEditorEntry, value: unknown) => void;
+  onMove: (direction: "up" | "down") => void;
+  onRemove: () => void;
+}
+
+function MVChartEntryRow({
+  entry,
+  index,
+  totalEntries,
+  onUpdate,
+  onMove,
+  onRemove,
+}: MVChartEntryRowProps) {
+  return (
+    <div className="grid grid-cols-[40px_60px_1fr_1fr_120px_120px_80px_100px_80px] gap-2 px-3 py-3 items-center hover:bg-bg-input/50 transition-colors">
+      {/* Drag Handle */}
+      <div className="flex justify-center">
+        <GripVertical className="w-4 h-4 text-gray-500 cursor-grab" />
+      </div>
+
+      {/* Rank */}
+      <div className="font-mono text-lg font-bold text-primary">
+        {entry.rank}
+      </div>
+
+      {/* Title (MV Name) */}
+      <Input
+        value={entry.title}
+        onChange={(e) => onUpdate("title", e.target.value)}
+        placeholder="MV名"
+        className="py-1.5"
+      />
+
+      {/* Artist */}
+      <Input
+        value={entry.artist}
+        onChange={(e) => onUpdate("artist", e.target.value)}
+        placeholder="アーティスト名"
+        className="py-1.5"
+      />
+
+      {/* Weekly Views */}
+      <Input
+        type="number"
+        value={entry.weeklyViews ?? ""}
+        onChange={(e) =>
+          onUpdate("weeklyViews", e.target.value ? parseInt(e.target.value) : 0)
+        }
+        placeholder="0"
+        className="py-1.5 text-right"
+        min={0}
+      />
+
+      {/* Total Views */}
+      <Input
+        type="number"
+        value={entry.totalViews ?? ""}
+        onChange={(e) =>
+          onUpdate("totalViews", e.target.value ? parseInt(e.target.value) : 0)
+        }
+        placeholder="0"
+        className="py-1.5 text-right"
+        min={0}
+      />
+
+      {/* Previous Rank */}
+      <Input
+        type="number"
+        value={entry.previousRank ?? ""}
+        onChange={(e) =>
+          onUpdate(
+            "previousRank",
+            e.target.value ? parseInt(e.target.value) : null
+          )
+        }
+        placeholder="-"
+        className="py-1.5 text-center"
+        min={1}
+      />
+
+      {/* Trend */}
+      <Select
+        options={trendOptions}
+        value={entry.trend}
+        onChange={(e) => onUpdate("trend", e.target.value as TrendDirection)}
+        className="py-1.5"
+      />
+
+      {/* Actions */}
+      <div className="flex gap-1">
+        <button
+          onClick={() => onMove("up")}
+          disabled={index === 0}
+          className="p-1.5 text-gray-400 hover:text-white hover:bg-bg-input rounded disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <ChevronUp className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => onMove("down")}
+          disabled={index === totalEntries - 1}
+          className="p-1.5 text-gray-400 hover:text-white hover:bg-bg-input rounded disabled:opacity-30 disabled:cursor-not-allowed"
+        >
+          <ChevronDown className="w-4 h-4" />
+        </button>
+        <button
+          onClick={onRemove}
+          className="p-1.5 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
 }
 

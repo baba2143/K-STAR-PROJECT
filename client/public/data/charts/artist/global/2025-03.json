@@ -1,0 +1,131 @@
+{
+  "id": "artist-global-2025-03",
+  "category": "global",
+  "period": "2025-03",
+  "periodStart": "2025-03-01",
+  "periodEnd": "2025-03-31",
+  "publishedAt": "2025-04-01T09:00:00Z",
+  "totalEntries": 10,
+  "entries": [
+    {
+      "rank": 1,
+      "previousRank": 1,
+      "peakPosition": 1,
+      "weeksOnChart": 300,
+      "artistId": "bts",
+      "name": "BTS",
+      "nameKo": "방탄소년단",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 2,
+      "previousRank": 2,
+      "peakPosition": 1,
+      "weeksOnChart": 250,
+      "artistId": "blackpink",
+      "name": "BLACKPINK",
+      "nameKo": "블랙핑크",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebc9690bc711d04b3d4fd4b87c",
+      "trend": "same",
+      "isFavorite": true
+    },
+    {
+      "rank": 3,
+      "previousRank": 4,
+      "peakPosition": 2,
+      "weeksOnChart": 180,
+      "artistId": "newjeans",
+      "name": "NewJeans",
+      "nameKo": "뉴진스",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 4,
+      "previousRank": 3,
+      "peakPosition": 2,
+      "weeksOnChart": 200,
+      "artistId": "straykids",
+      "name": "Stray Kids",
+      "nameKo": "스트레이 키즈",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb6e9b4d832fb8b2cefe3a9d7e",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 5,
+      "previousRank": 5,
+      "peakPosition": 3,
+      "weeksOnChart": 180,
+      "artistId": "seventeen",
+      "name": "SEVENTEEN",
+      "nameKo": "세븐틴",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb7fd4b86d588d7a44ff6a8b0d",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 6,
+      "previousRank": 7,
+      "peakPosition": 4,
+      "weeksOnChart": 150,
+      "artistId": "aespa",
+      "name": "aespa",
+      "nameKo": "에스파",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb58e23b21ef049774d2c88c8c",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 7,
+      "previousRank": 6,
+      "peakPosition": 4,
+      "weeksOnChart": 160,
+      "artistId": "twice",
+      "name": "TWICE",
+      "nameKo": "트와이스",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb4eb35c9a8d8c6d5dbd7a4e55",
+      "trend": "down",
+      "isFavorite": false
+    },
+    {
+      "rank": 8,
+      "previousRank": 8,
+      "peakPosition": 5,
+      "weeksOnChart": 140,
+      "artistId": "lesserafim",
+      "name": "LE SSERAFIM",
+      "nameKo": "르세라핌",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb8c1e67b6b0b8b8b8b8b8b8b8",
+      "trend": "same",
+      "isFavorite": false
+    },
+    {
+      "rank": 9,
+      "previousRank": 10,
+      "peakPosition": 6,
+      "weeksOnChart": 120,
+      "artistId": "ive",
+      "name": "IVE",
+      "nameKo": "아이브",
+      "image": "https://i.scdn.co/image/ab6761610000e5ebd642648235ebf3460d2d1f6a",
+      "trend": "up",
+      "isFavorite": false
+    },
+    {
+      "rank": 10,
+      "previousRank": 9,
+      "peakPosition": 7,
+      "weeksOnChart": 100,
+      "artistId": "enhypen",
+      "name": "ENHYPEN",
+      "nameKo": "엔하이픈",
+      "image": "https://i.scdn.co/image/ab6761610000e5eb5da361915b1fa48895d4f23f",
+      "trend": "down",
+      "isFavorite": false
+    }
+  ]
+}

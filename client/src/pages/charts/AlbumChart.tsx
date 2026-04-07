@@ -7,7 +7,7 @@ import { useParams, Link, useLocation } from "wouter";
 import { Grid3X3, List, Share2, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
-import ChartHero from "@/components/charts/ChartHero";
+import HeroSection from "@/components/HeroSection";
 import WeekSelector from "@/components/charts/WeekSelector";
 import { ChartListSkeleton } from "@/components/ui/skeleton";
 import { useAlbumsChart, useAvailableWeeks } from "@/hooks/useChartData";
@@ -63,11 +63,7 @@ export default function AlbumChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <ChartHero
-        chartType="albums"
-        title="K-STAR ALBUMS"
-        subtitle="最も売れているK-POPアルバムランキング"
-      />
+      <HeroSection />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

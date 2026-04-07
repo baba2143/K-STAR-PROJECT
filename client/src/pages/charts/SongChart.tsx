@@ -7,7 +7,7 @@ import { useParams, useLocation } from "wouter";
 import { Grid3X3, List, Share2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import ChartLayout from "@/components/charts/ChartLayout";
-import ChartHero from "@/components/charts/ChartHero";
+import HeroSection from "@/components/HeroSection";
 import WeekSelector from "@/components/charts/WeekSelector";
 import ChartEntry from "@/components/ChartEntry";
 import { ChartListSkeleton } from "@/components/ui/skeleton";
@@ -84,11 +84,7 @@ export default function SongChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <ChartHero
-        chartType="songs"
-        title="K-STAR TOP 100"
-        subtitle="最も人気のあるK-POP楽曲ランキング"
-      />
+      <HeroSection bannerImage="/images/chart-banner.png" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">
