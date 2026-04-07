@@ -163,12 +163,14 @@ export default function HeroSection({
             ) : (
               /* Placeholder when no banner image */
               <div
-                className="h-24 sm:h-32 md:h-40 lg:h-48 w-40 sm:w-48 md:w-56 lg:w-64 rounded-lg"
+                className="h-24 sm:h-32 md:h-40 lg:h-48 w-40 sm:w-48 md:w-56 lg:w-64 rounded-lg flex items-center justify-center"
                 style={{
-                  background: "linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%)",
-                  border: "1px dashed rgba(168, 85, 247, 0.3)",
+                  background: "linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%)",
+                  border: "2px dashed rgba(168, 85, 247, 0.5)",
                 }}
-              />
+              >
+                <span className="text-gray-500 text-xs">Banner</span>
+              </div>
             )}
           </div>
         </div>
