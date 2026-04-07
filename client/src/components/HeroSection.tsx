@@ -49,8 +49,8 @@ export default function HeroSection({ bannerImage, chartName = "K-STAR CHART" }:
       />
 
       {/* Content */}
-      <div className="relative z-10 flex items-end h-full min-h-[300px] px-5 sm:px-8 pb-7 pt-8">
-        <div className="flex items-end justify-between w-full gap-4">
+      <div className="relative z-10 h-full min-h-[300px] px-5 sm:px-8 pb-7 pt-8">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between w-full gap-4">
           {/* Left: Text content */}
           <div>
             {/* Logo + K-STAR wordmark */}
@@ -132,13 +132,13 @@ export default function HeroSection({ bannerImage, chartName = "K-STAR CHART" }:
             </div>
           </div>
 
-          {/* Right: Banner image (hidden on mobile) */}
+          {/* Banner image - below text on mobile, right side on desktop */}
           {bannerImage && (
-            <div className="hidden sm:block flex-shrink-0">
+            <div className="flex-shrink-0 mt-4 sm:mt-0">
               <img
                 src={bannerImage}
                 alt="Banner"
-                className="h-32 md:h-40 lg:h-48 w-auto rounded-lg shadow-lg"
+                className="h-24 sm:h-32 md:h-40 lg:h-48 w-auto rounded-lg shadow-lg"
                 style={{
                   filter: "drop-shadow(0 0 20px rgba(168, 85, 247, 0.3))",
                 }}
