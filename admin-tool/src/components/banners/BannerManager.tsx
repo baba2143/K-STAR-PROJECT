@@ -9,14 +9,13 @@ const chartTypeOptions: { value: BannerChartType; label: string }[] = [
   { value: "monthly", label: "MONTHLY CHART" },
   { value: "season", label: "SEASON CHART" },
   { value: "year-end", label: "YEAR-END CHART" },
-  { value: "album", label: "ALBUM CHART" },
-  { value: "artist", label: "ARTIST CHART" },
   { value: "rookie", label: "BEST ROOKIE" },
   { value: "solo", label: "BEST SOLO & FEATURING" },
   { value: "group", label: "BEST GROUP" },
   { value: "icon", label: "BEST ICON" },
   { value: "global", label: "BEST GLOBAL" },
-  { value: "global-mv", label: "GLOBAL MV CHART" },
+  { value: "global-mv", label: "GLOBAL MUSIC VIDEO CHART" },
+  { value: "hot-now", label: "HOT NOW MUSIC VIDEO CHART" },
 ];
 
 interface BannerManagerProps {

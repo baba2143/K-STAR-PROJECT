@@ -351,14 +351,13 @@ export type BannerChartType =
   | 'monthly'
   | 'season'
   | 'year-end'
-  | 'album'
-  | 'artist'
   | 'rookie'
   | 'solo'
   | 'group'
   | 'icon'
   | 'global'
-  | 'global-mv';
+  | 'global-mv'
+  | 'hot-now';
 
 // ============================================
 // UI State Types
