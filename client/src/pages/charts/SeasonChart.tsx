@@ -95,7 +95,7 @@ export default function SeasonChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection />
+      <HeroSection chartName="SEASON CHART" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

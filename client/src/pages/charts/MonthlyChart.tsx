@@ -90,7 +90,7 @@ export default function MonthlyChart() {
   return (
     <ChartLayout>
       {/* Hero Section */}
-      <HeroSection />
+      <HeroSection chartName="MONTHLY CHART" />
 
       {/* Chart Content */}
       <div className="bg-[#0f0f0f]">

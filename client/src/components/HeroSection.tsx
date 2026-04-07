@@ -7,9 +7,10 @@
 
 interface HeroSectionProps {
   bannerImage?: string;
+  chartName?: string;
 }
 
-export default function HeroSection({ bannerImage }: HeroSectionProps) {
+export default function HeroSection({ bannerImage, chartName = "K-STAR CHART" }: HeroSectionProps) {
   return (
     <div
       className="relative w-full overflow-hidden"
@@ -71,7 +72,7 @@ export default function HeroSection({ bannerImage }: HeroSectionProps) {
                   backgroundClip: "text",
                 }}
               >
-                K-STAR CHART
+                {chartName}
               </div>
             </div>
 
